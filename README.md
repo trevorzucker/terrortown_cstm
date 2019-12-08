@@ -16,6 +16,14 @@
 
  • Optimized code
 
+ • Reworked ironsights
+
+ • Reworked bolt-action weapons
+
+ • Custom magnification view for scopes
+
+ • No additional downloads for client (besides small filesize attachment models) -- adds a huge amount of gameplay mechanics for such a small download time
+
 ## Demo
  [Here is a video of the weapon base in action](https://www.youtube.com/watch?v=wynb6JD1CBw)
 
