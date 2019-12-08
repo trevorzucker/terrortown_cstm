@@ -12,7 +12,6 @@ surface.CreateFont("Trebuchet22", {font = "Trebuchet MS",
                                    size = 22,
                                    weight = 900})
 
-include("cl_panels.lua");
 include("scoring_shd.lua")
 include("corpse_shd.lua")
 include("player_ext_shd.lua")
@@ -112,7 +111,7 @@ local function RoundStateChange(o, n)
       CLSCORE:ClearPanel()
 
       -- people may have died and been searched during prep
-      for _, p in pairs(player.GetAll()) do
+      for _, p in ipairs(player.GetAll()) do
          p.search_result = nil
       end
 
@@ -137,7 +136,7 @@ local function RoundStateChange(o, n)
    end
 
    -- whatever round state we get, clear out the voice flags
-   for k,v in pairs(player.GetAll()) do
+   for k,v in ipairs(player.GetAll()) do
       v.traitor_gvoice = false
    end
 end
@@ -229,7 +228,7 @@ function GM:ClearClientState()
 
    VOICE.InitBattery()
 
-   for _, p in pairs(player.GetAll()) do
+   for _, p in ipairs(player.GetAll()) do
       if IsValid(p) then
          p.sb_tag = nil
          p:SetRole(ROLE_INNOCENT)
@@ -249,7 +248,7 @@ net.Receive("TTT_ClearClientState", GM.ClearClientState)
 function GM:CleanUpMap()
    -- Ragdolls sometimes stay around on clients. Deleting them can create issues
    -- so all we can do is try to hide them.
-   for _, ent in pairs(ents.FindByClass("prop_ragdoll")) do
+   for _, ent in ipairs(ents.FindByClass("prop_ragdoll")) do
       if IsValid(ent) and CORPSE.GetPlayerNick(ent, "") != "" then
          ent:SetNoDraw(true)
          ent:SetSolid(SOLID_NONE)
@@ -403,129 +402,4 @@ function GM:OnEntityCreated(ent)
    end
 
    return self.BaseClass.OnEntityCreated(self, ent)
-end
-
-if (CLIENT) then
-   net.Receive("RegisterAttachments", function(len)
-      local tbl = net.ReadTable();
-      local ent = net.ReadEntity();
-
-      if (IsValid(ent) && ent.EquippedAttachments != nil) then
-         for k, v in pairs(tbl) do
-            ent.EquippedAttachments[k] = "none";
-            for i, j in pairs(tbl[k]) do
-               tbl[k][i].Material = Material(j.Image);
-               --print("registered attachment " ..j.AttachmentName.. " on " ..tostring(ent));
-            end
-         end
-         ent.RegisteredAttachments = tbl;
-         local hasFinished = false;
-         --while (ent.Initialize != nil && ent.DrawWorldModel != nil && !hasFinished) do
-            ent.vRenderOrder = nil;
-            ent:Initialize();
-            ent.HasReceivedAtt = true;
-            ent:DrawWorldModel();
-            ent.wRenderOrder = nil;
-            hasFinished = true;
-         --end
-      else
-         print("err. couldn't initialize " ..tostring(ent));
-      end
-   end)
-
-   net.Receive("InitCClient", function(len)
-      timer.Simple(0.3, function()
-         local hasAtt = false;
-
-         for k,v in pairs(LocalPlayer():GetActiveWeapon().RegisteredAttachments) do
-            hasAtt = true;
-         end
-
-         if (!hasAtt) then
-            net.Start("InitClientCurrent");
-            net.SendToServer();
-         end
-      end)
-   end)
-
-   net.Receive("EquipAttachment", function(len)
-      local condition = net.ReadBool();
-      local cat = net.ReadString();
-      local attName = net.ReadString();
-      local plName = net.ReadString();
-      local equippedTbl = net.ReadTable();
-
-      local pl = nil;
-      local plWep = nil;
-
-      for k,v in pairs(player.GetAll()) do
-         if (plName == v:Nick()) then 
-            pl = v;
-            plWep = pl:GetActiveWeapon();
-         end
-      end
-
-      if (plWep != nil && plWep.RegisteredAttachments != nil && plWep.RegisteredAttachments[cat] != nil && plWep.RegisteredAttachments[cat][attName] != nil) then
-         if (condition) then
-            plWep.VElements[attName].hide = false;
-            if (plWep.VElements[plWep.RegisteredAttachments[cat][attName].Parent] != nil) then
-               plWep.VElements[plWep.RegisteredAttachments[cat][attName].Parent].hide = false;
-            end
-
-            if (!plWep.RegisteredAttachments[cat][attName].HideModel) then
-               plWep.WElements[attName].hide = false;
-            end
-            if (plWep.WElements[plWep.RegisteredAttachments[cat][attName].WModelParent] != nil) then
-               plWep.WElements[plWep.RegisteredAttachments[cat][attName].WModelParent].hide = false;
-            end
-         else
-            plWep.VElements[attName].hide = true;
-            if (plWep.VElements[plWep.RegisteredAttachments[cat][attName].Parent] != nil) then
-               plWep.VElements[plWep.RegisteredAttachments[cat][attName].Parent].hide = true;
-            end
-
-            if (!plWep.RegisteredAttachments[cat][attName].HideModel) then
-               plWep.WElements[attName].hide = true;
-            end
-            if (plWep.WElements[plWep.RegisteredAttachments[cat][attName].WModelParent] != nil) then
-               plWep.WElements[plWep.RegisteredAttachments[cat][attName].WModelParent].hide = true;
-            end
-         end
-      end
-      if (plWep != nil) then
-         plWep.EquippedAttachments = equippedTbl;
-      end
-   end)
-
-   net.Receive("ClientsideVar", function(len)
-      local plName = net.ReadString();
-      local var = net.ReadString();
-      local _type = net.ReadString();
-      local val = nil;
-
-      for k,v in pairs(net) do
-         if (k == ("Read" .._type)) then
-            if (_type == "Int") then
-               val = net[k](32);
-            else
-               val = net[k]();
-            end
-         end
-      end
-
-      local wep = nil;
-      for k,v in pairs(player.GetAll()) do
-         if (v:Nick() == plName) then
-            wep = v:GetActiveWeapon();
-         end
-      end
-
-      local processedVar = string.Split(var, ".");
-      if (processedVar[2] && processedVar[3] && wep != nil) then
-         wep[processedVar[2]][processedVar[3]] = val;
-      elseif (processedVar[2] && wep != nil) then
-         wep[processedVar[2]] = val;
-      end
-      --print("Changing " ..var.. " to " ..tostring(val).. " on " ..tostring(wep));
-   end)
 end

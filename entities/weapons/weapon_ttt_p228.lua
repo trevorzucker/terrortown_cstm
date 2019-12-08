@@ -29,7 +29,7 @@ SWEP.Primary.ClipMax       = 60
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.Sound         = Sound( "Weapon_P228.Single" )
 SWEP.Primary.UnsilencedSound         = SWEP.Primary.Sound;
-SWEP.Primary.SilencedSound         = "weapons/sil04.wav";
+SWEP.Primary.SilencedSound         = Sound( "Weapon_USP.SilencedShot" );
 
 SWEP.AutoSpawnable         = true
 SWEP.AmmoEnt               = "item_ammo_pistol_ttt"

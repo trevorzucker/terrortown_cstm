@@ -294,25 +294,6 @@ function CORPSE.ShowSearch(ply, rag, covert, long_range)
    else
       net.Send(ply)
    end
-
-   local dropAttachments = {};
-
-   local corpseOwner = rag:GetDTEntity(dti.ENT_PLAYER);
-
-   for k,v in pairs(scripted_ents.GetList()) do
-      if (v.t.AttachmentName != nil) then
-         if (rag:GetNWInt("Has" ..v.t.AttachmentName) == 1) then
-            if (ply:GetNWInt("Has" ..v.t.AttachmentName) == 0 && ply:GetActiveWeapon():GetNWInt("Has" ..v.t.AttachmentName) == 0) then
-               ply:SetNWInt("Has" ..v.t.AttachmentName, 1);
-               net.Start("PickupAttachment");
-                  net.WriteString(v.t.AttachmentName);
-               net.Send(ply);
-            end
-         end
-      end
-   end
-
-   --print(ply:Nick().. " searched " ..corpseOwner:Nick())
 end
 
 
@@ -405,6 +386,10 @@ function CORPSE.Create(ply, attacker, dmginfo)
 
    rag:SetPos(ply:GetPos())
    rag:SetModel(ply:GetModel())
+   rag:SetSkin(ply:GetSkin())
+   for key, value in pairs(ply:GetBodyGroups()) do
+      rag:SetBodygroup(value.id, ply:GetBodygroup(value.id))	
+   end
    rag:SetAngles(ply:GetAngles())
    rag:SetColor(ply:GetColor())
 
@@ -413,7 +398,6 @@ function CORPSE.Create(ply, attacker, dmginfo)
 
    -- nonsolid to players, but can be picked up and shot
    rag:SetCollisionGroup(rag_collide:GetBool() and COLLISION_GROUP_WEAPON or COLLISION_GROUP_DEBRIS_TRIGGER)
-   timer.Simple( 1, function() if IsValid( rag ) then rag:CollisionRulesChanged() end end )
 
    -- flag this ragdoll as being a player's
    rag.player_ragdoll = true

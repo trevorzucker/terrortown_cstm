@@ -30,7 +30,7 @@ SWEP.Primary.ClipMax       = 150
 SWEP.Primary.DefaultClip   = 50
 SWEP.Primary.Sound         = Sound( "Weapon_P90.Single" )
 SWEP.Primary.UnsilencedSound         = SWEP.Primary.Sound;
-SWEP.Primary.SilencedSound         = "weapons/sil02.wav";
+SWEP.Primary.SilencedSound         = Sound( "Weapon_USP.SilencedShot" );
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true

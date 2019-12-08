@@ -1,13 +1,13 @@
 -- Custom weapon base, used to derive from CS one, still very similar
 
 if (SERVER) then
-	util.AddNetworkString("RegisterAttachments");
-	util.AddNetworkString("CustomizeEvent");
-	util.AddNetworkString("EquipAttachment");
-	util.AddNetworkString("ClientsideVar");
-	util.AddNetworkString("InitClient");
-	util.AddNetworkString("InitClientCurrent");
-	util.AddNetworkString("InitCClient");
+   util.AddNetworkString("RegisterAttachments");
+   util.AddNetworkString("CustomizeEvent");
+   util.AddNetworkString("EquipAttachment");
+   util.AddNetworkString("ClientsideVar");
+   util.AddNetworkString("InitClient");
+   util.AddNetworkString("InitClientCurrent");
+   util.AddNetworkString("InitCClient");
 end
 
 AddCSLuaFile()
@@ -160,12 +160,6 @@ SWEP.WElements = {};
 
 local sparkle = CLIENT and CreateConVar("ttt_crazy_sparks", "0", FCVAR_ARCHIVE)
 
-local reticle_r = CLIENT and CreateConVar("reticle_r", "255", FCVAR_ARCHIVE);
-local reticle_g = CLIENT and CreateConVar("reticle_g", "0", FCVAR_ARCHIVE);
-local reticle_b = CLIENT and CreateConVar("reticle_b", "0", FCVAR_ARCHIVE);
-local cstmKey = CLIENT and CreateConVar("ttt_customize_key", "v", FCVAR_ARCHIVE);
-
-
 SWEP.CustomizePos = {};
 
 -- crosshair
@@ -175,7 +169,6 @@ if CLIENT then
    local crosshair_brightness = CreateConVar("ttt_crosshair_brightness", "1.0", FCVAR_ARCHIVE)
    local crosshair_size = CreateConVar("ttt_crosshair_size", "1.0", FCVAR_ARCHIVE)
    local disable_crosshair = CreateConVar("ttt_disable_crosshair", "0", FCVAR_ARCHIVE)
-
    local alpha = 1;
 
    function SWEP:DrawHUD()
@@ -251,7 +244,7 @@ if CLIENT then
          local gap = cvar_gap:GetFloat();
          local padding = 5;
          surface.SetDrawColor(0, 0, 0, 200 * self.CustomizeMul);
-         surface.SetFont("SH_TTT_HUD3")
+         surface.SetFont("DermaDefaultBold")
          local attLbl = "Current Attachments";
          local textw, texth = surface.GetTextSize(attLbl)
          local w = textw + padding * 2;
@@ -267,16 +260,16 @@ if CLIENT then
          surface.DrawTexturedRect(x - w / 2, y, w / 2, h );
          surface.DrawTexturedRect(x - w / 2, y, w / 2, 2);
          surface.DrawTexturedRect(x - w / 2, y + h - 2, w / 2, 2);
-         draw.SimpleTextOutlined(attLbl, "SH_TTT_HUD3", x + padding, y, Color(255, 255, 255, 200 * self.CustomizeMul), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 2, Color(50, 50, 50, 255 * self.CustomizeMul))
+         draw.SimpleTextOutlined(attLbl, "DermaDefaultBold", x + padding, y, Color(255, 255, 255, 200 * self.CustomizeMul), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 2, Color(50, 50, 50, 255 * self.CustomizeMul))
 
          local yCount = 0;
          for k,v in pairs(self.RegisteredAttachments) do
             for i, j in pairs(v) do
                if (self.EquippedAttachments[k] == j.AttachmentName) then
                   local attName = j.AttachmentName;
-                  surface.SetFont("SH_TTT_HUD2")
+                  surface.SetFont("TargetID")
                   local textw, texth = surface.GetTextSize(attName)
-                  surface.SetFont("SH_TTT_HUD1");
+                  surface.SetFont("TargetIDSmall");
                   local descw, desch = surface.GetTextSize(j.Description);
 
                   descW = w;
@@ -290,271 +283,248 @@ if CLIENT then
                   surface.DrawTexturedRect(x - descW + w / 2, y + h + (texth * 2 * yCount) + padding / 2, descW / 2, 2);
                   surface.DrawTexturedRect(x - descW + w / 2, y + h + (texth * 2 * yCount) + padding / 2 + texth + desch + padding - 2, descW / 2, 2);
 
-                  draw.SimpleTextOutlined(attName, "SH_TTT_HUD2", x + w - padding, y + h + (texth * 2 * yCount) + 2, Color(255, 255, 255, 200 * self.CustomizeMul), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP, 2, Color(50, 50, 50, 255 * self.CustomizeMul))
-                  draw.SimpleTextOutlined(j.Description, "SH_TTT_HUD1", x + w - padding, y + h + texth + (texth * 2 * yCount) + padding - 2, Color(255, 255, 255, 200 * self.CustomizeMul), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP, 2, Color(50, 50, 50, 255 * self.CustomizeMul))
+                  draw.SimpleTextOutlined(attName, "TargetID", x + w - padding, y + h + (texth * 2 * yCount) + 2, Color(255, 255, 255, 200 * self.CustomizeMul), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP, 2, Color(50, 50, 50, 255 * self.CustomizeMul))
+                  draw.SimpleTextOutlined(j.Description, "TargetIDSmall", x + w - padding, y + h + texth + (texth * 2 * yCount) + padding - 2, Color(255, 255, 255, 200 * self.CustomizeMul), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP, 2, Color(50, 50, 50, 255 * self.CustomizeMul))
                   yCount = yCount + 1;
                end
             end
          end
       end
 
-   		local padding = 5;
-   		local boneName = "";
+         local padding = 5;
+         local boneName = "";
 
-   		for k,v in pairs(self.VElements) do
-   			if (v.bone != nil && v.bone != " " && v.bone != "") then
-   				boneName = v.bone;
-   			end
-   		end
+         for k,v in pairs(self.VElements) do
+            if (v.bone != nil && v.bone != " " && v.bone != "") then
+               boneName = v.bone;
+            end
+         end
 
-		local bone = self.Owner:GetViewModel():LookupBone(boneName);
+      local bone = self.Owner:GetViewModel():LookupBone(boneName);
 
-		if (!bone) then return end
+      if (!bone) then return end
 
-		local pos, ang = Vector(0,0,0), Angle(0,0,0)
-		local m = self.Owner:GetViewModel():GetBoneMatrix(bone)
-		if (m) then
-			pos, ang = m:GetTranslation(), m:GetAngles()
-		end
+      local pos, ang = Vector(0,0,0), Angle(0,0,0)
+      local m = self.Owner:GetViewModel():GetBoneMatrix(bone)
+      if (m) then
+         pos, ang = m:GetTranslation(), m:GetAngles()
+      end
 
-		local ct = 1;
-   		for k,v in pairs(self.RegisteredAttachments) do
-   			local count = 0;
-   			for i, j in pairs(v) do
-   				if (self.Owner:GetNWInt("Has" ..j.AttachmentName) == 1 || self:GetNWInt("Has" ..j.AttachmentName) == 1) then
-	   				count = count + 1;
-   				end
-   			end
+      local ct = 1;
+         for k,v in pairs(self.RegisteredAttachments) do
+            local count = 0;
+            for i, j in pairs(v) do
+               if (self.Owner:GetNWInt("Has" ..j.AttachmentName) == 1 || self:GetNWInt("Has" ..j.AttachmentName) == 1) then
+                  count = count + 1;
+               end
+            end
 
-   			if (count == 0) then continue; end;
+            if (count == 0) then continue; end;
 
-   			-- k is cat name
-   			local offset = self.CustomizePos[k]
+            -- k is cat name
+            local offset = self.CustomizePos[k]
 
-			local _pos = (pos + (offset.x * ang:Forward()) + (offset.y * ang:Right()) ):ToScreen();
+         local _pos = (pos + (offset.x * ang:Forward()) + (offset.y * ang:Right()) ):ToScreen();
 
-			surface.SetDrawColor(0, 0, 0, 200 * self.CustomizeMul);
-			surface.SetFont("SH_TTT_HUD2");
-			local textw, texth = surface.GetTextSize(k);
+         surface.SetDrawColor(0, 0, 0, 200 * self.CustomizeMul);
+         surface.SetFont("TargetID");
+         local textw, texth = surface.GetTextSize(k);
          textw = textw + padding * 2.5 + (ScrW() / 32 * (count - 1)) + (padding * (count));
-			texth = texth + padding + (ScrW() / 32);
-			local x = math.Clamp((_pos.x - textw * 1.8), 0, ScrW());
-			local y = math.Clamp((_pos.y / 3), 0, ScrH());
-   			surface.DrawRect(x + textw, y, textw, texth);
-   			surface.DrawRect(x + textw, y, 2, texth);
-   			surface.DrawRect(x + textw, y, textw, 2);
-   			surface.DrawRect(x + textw + textw - 2, y, 2, texth);
-   			surface.DrawRect(x + textw, y + texth - 2, textw, 2);
+         texth = texth + padding + (ScrW() / 32);
+         local x = math.Clamp((_pos.x - textw * 1.8), 0, ScrW());
+         local y = math.Clamp((_pos.y / 3), 0, ScrH());
+            surface.DrawRect(x + textw, y, textw, texth);
+            surface.DrawRect(x + textw, y, 2, texth);
+            surface.DrawRect(x + textw, y, textw, 2);
+            surface.DrawRect(x + textw + textw - 2, y, 2, texth);
+            surface.DrawRect(x + textw, y + texth - 2, textw, 2);
 
-   			count = 0;
+            count = 0;
 
-   			local _ct = 0;
+            local _ct = 0;
 
-   			for i,j in pairs(v) do
-   				if (self.Owner:GetNWInt("Has" ..j.AttachmentName) == 1 || self:GetNWInt("Has" ..j.AttachmentName) == 1) then
-   					_ct = _ct + 1;
-   				end
-   			end
+            for i,j in pairs(v) do
+               if (self.Owner:GetNWInt("Has" ..j.AttachmentName) == 1 || self:GetNWInt("Has" ..j.AttachmentName) == 1) then
+                  _ct = _ct + 1;
+               end
+            end
 
-   			for i, j in pairs(v) do
-   				if (self.Owner:GetNWInt("Has" ..j.AttachmentName) == 1 || self:GetNWInt("Has" ..j.AttachmentName) == 1) then
-	   				surface.SetMaterial(j.Material);
-	   				if (self.EquippedAttachments[k] == j.AttachmentName) then
-	   					surface.SetDrawColor(255, 255, 255, 255 * self.CustomizeMul);
-	   				end
-	   				if (_ct >= 2) then
-		   				surface.DrawTexturedRect(x + textw + (ScrW() / 32 * (count)) + padding * 2 + (padding * (count)), y + texth - ScrW() / 32 - padding, ScrW() / 32, ScrW() / 32);
-	   				else
-		   				surface.DrawTexturedRect(x + textw + textw / 2 - ScrW() / 32 / 2, y + texth - ScrW() / 32 - padding, ScrW() / 32, ScrW() / 32);
-	   				end
-   					surface.SetDrawColor(0, 0, 0, 200 * self.CustomizeMul);
-	   				count = count + 1;
-   				end
-   			end
+            for i, j in pairs(v) do
+               if (self.Owner:GetNWInt("Has" ..j.AttachmentName) == 1 || self:GetNWInt("Has" ..j.AttachmentName) == 1) then
+                  surface.SetMaterial(j.Material);
+                  if (self.EquippedAttachments[k] == j.AttachmentName) then
+                     surface.SetDrawColor(255, 255, 255, 255 * self.CustomizeMul);
+                  end
+                  if (_ct >= 2) then
+                     surface.DrawTexturedRect(x + textw + (ScrW() / 32 * (count)) + padding * 2 + (padding * (count)), y + texth - ScrW() / 32 - padding, ScrW() / 32, ScrW() / 32);
+                  else
+                     surface.DrawTexturedRect(x + textw + textw / 2 - ScrW() / 32 / 2, y + texth - ScrW() / 32 - padding, ScrW() / 32, ScrW() / 32);
+                  end
+                  surface.SetDrawColor(0, 0, 0, 200 * self.CustomizeMul);
+                  count = count + 1;
+               end
+            end
 
-   			surface.DrawLine(x + textw - 1 + textw, y + texth, _pos.x, _pos.y);
-   			surface.DrawLine(x + textw - 2 + textw, y + texth, _pos.x - 1, _pos.y);
+            surface.DrawLine(x + textw - 1 + textw, y + texth, _pos.x, _pos.y);
+            surface.DrawLine(x + textw - 2 + textw, y + texth, _pos.x - 1, _pos.y);
 
-			draw.SimpleTextOutlined(k, "SH_TTT_HUD2", x + padding + textw, y, Color(255, 255, 255, 200 * self.CustomizeMul), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 2, Color(50, 50, 50, 255 * self.CustomizeMul))
-			draw.SimpleTextOutlined(ct, "SH_TTT_HUD1", x + textw, y - 2, Color(255, 255, 255, 200 * self.CustomizeMul), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM, 2, Color(50, 50, 50, 255 * self.CustomizeMul))
-			ct = ct + 1;
-   		end
+         draw.SimpleTextOutlined(k, "TargetID", x + padding + textw, y, Color(255, 255, 255, 200 * self.CustomizeMul), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 2, Color(50, 50, 50, 255 * self.CustomizeMul))
+         draw.SimpleTextOutlined(ct, "TargetIDSmall", x + textw, y - 2, Color(255, 255, 255, 200 * self.CustomizeMul), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM, 2, Color(50, 50, 50, 255 * self.CustomizeMul))
+         ct = ct + 1;
+         end
    end
 
-	local rw, rh = ScrW() / 4, ScrH() / 4;
-	local scopeTex = GetRenderTarget("scope", rw, rh, true);
-   	local lensdirt = Material("overlays/scope_lens")
-	local mat = CreateMaterial("uniquemat"..os.time(), "UnlitGeneric", {
-		['$basetexture'] = texture,
-	});
+   local rw, rh = ScrW() / 4, ScrH() / 4;
+   local scopeTex = GetRenderTarget("scope", rw, rh, true);
+      local lensdirt = Material("overlays/scope_lens")
+   local mat = CreateMaterial("uniquemat"..os.time(), "UnlitGeneric", {
+      ['$basetexture'] = texture,
+   });
 
-	local rDelta = 0;
-	local lastR = 0;
+   local rDelta = 0;
+   local lastR = 0;
 
-	function SWEP:DrawScopes() 
-		local r = reticle_r:GetInt();
-		local g = reticle_g:GetInt();
-		local b = reticle_b:GetInt();
-		local shouldDrawRedDot = false;
-		local magnification = 0;
-		local equippedScopeData = nil;
+   function SWEP:DrawScopes()
+      local shouldDrawRedDot = false;
+      local magnification = 0;
+      local equippedScopeData = nil;
 
-		for k,v in pairs(self.RegisteredAttachments) do
-			local equipped = self.EquippedAttachments[k];
-			if (equipped && equipped != "none") then
-				local magnif = self.RegisteredAttachments[k][equipped].Magnification;
-				if (magnif == 1) then
-					shouldDrawRedDot = true;
-				end
+      for k,v in pairs(self.RegisteredAttachments) do
+         local equipped = self.EquippedAttachments[k];
+         if (equipped && equipped != "none") then
+            local magnif = self.RegisteredAttachments[k][equipped].Magnification;
+            if (magnif == 1) then
+               shouldDrawRedDot = true;
+            end
 
-				if (magnif != 0) then
-					magnification = magnif;
-					equippedScopeData = self.RegisteredAttachments[k][equipped];
-				end
-			end
-		end
+            if (magnif != 0) then
+               magnification = magnif;
+               equippedScopeData = self.RegisteredAttachments[k][equipped];
+            end
+         end
+      end
 
-		if (shouldDrawRedDot && self.mul >= 0.9) then
-			local bone = self.Owner:GetViewModel():LookupBone(equippedScopeData.Bone);
+      if (shouldDrawRedDot && self.mul >= 0.9) then
+         local bone = self.Owner:GetViewModel():LookupBone(equippedScopeData.Bone);
 
-			if (!bone) then return end
+         if (!bone) then return end
 
-			local pos, ang = Vector(0,0,0), Angle(0,0,0)
-			local m = self.Owner:GetViewModel():GetBoneMatrix(bone)
-			if (m) then
-			pos, ang = m:GetTranslation(), m:GetAngles()
-			end
+         local pos, ang = Vector(0,0,0), Angle(0,0,0)
+         local m = self.Owner:GetViewModel():GetBoneMatrix(bone)
+         if (m) then
+         pos, ang = m:GetTranslation(), m:GetAngles()
+         end
 
-			local boneXPos = pos:ToScreen().x - ScrW() / 2;
+         local boneXPos = pos:ToScreen().x - ScrW() / 2;
 
-			render.SetScissorRect( ScrW() / 3 + boneXPos, ScrH() / 2 - 32, ScrW() / 2 + 512 * self.mul + boneXPos, ScrH() / 2 + 512 * self.mul, true ) -- Enable the rect
+         render.SetScissorRect( ScrW() / 2 + boneXPos - 16, ScrH() / 2 - 32, ScrW() / 2 + 512 * self.mul + boneXPos, ScrH() / 2 + 512 * self.mul, true ) -- Enable the rect
             if (equippedScopeData.AttachmentName == "EOTech") then
-               surface.SetDrawColor(r, g, b, 230);
+               surface.SetDrawColor(255, 0, 0, 230);
                surface.DrawRect(ScrW() / 2, ScrH() / 2, 2, 2 )
 
-               surface.SetDrawColor(r, g, b, 110);
+               surface.SetDrawColor(255, 0, 0, 110);
                surface.DrawRect(ScrW() / 2 - 1, ScrH() / 2, 1, 2 )
                surface.DrawRect(ScrW() / 2 + 2, ScrH() / 2, 1, 2 )
                surface.DrawRect(ScrW() / 2, ScrH() / 2 - 1, 2, 1 )
                surface.DrawRect(ScrW() / 2, ScrH() / 2 + 2, 2, 1 )
 
-               surface.DrawCircle(ScrW() / 2 + 1, ScrH() / 2 + 1, ScrH() / 64, r, g, b, 230);
+               surface.DrawCircle(ScrW() / 2 + 1, ScrH() / 2 + 1, ScrH() / 64, 255, 0, 0, 230);
 
                surface.DrawRect(ScrW() / 2 - ScrH() / 64 - 2, ScrH() / 2, 4, 2 )
                surface.DrawRect(ScrW() / 2, ScrH() / 2 - ScrH() / 64 - 2, 2, 4 )
                surface.DrawRect(ScrW() / 2 + ScrH() / 64 + 1, ScrH() / 2, 4, 2 )
                surface.DrawRect(ScrW() / 2, ScrH() / 2 + ScrH() / 64 + 1, 2, 4 )
             else
-            	drawReticle();
+               surface.SetDrawColor(255, 0, 0, 230);
+               surface.DrawRect(ScrW() / 2, ScrH() / 2, 2, 2 )
+
+               surface.SetDrawColor(255, 0, 0, 110);
+               surface.DrawRect(ScrW() / 2 - 1, ScrH() / 2, 1, 2 )
+               surface.DrawRect(ScrW() / 2 + 2, ScrH() / 2, 1, 2 )
+               surface.DrawRect(ScrW() / 2, ScrH() / 2 - 1, 2, 1 )
+               surface.DrawRect(ScrW() / 2, ScrH() / 2 + 2, 2, 1 )
             end
-			render.SetScissorRect( 0, 0, 0, 0, false ) -- Disable after you are done
-		elseif (!shouldDrawRedDot && magnification > 1) then
-			local bone = self.Owner:GetViewModel():LookupBone(equippedScopeData.Bone);
+         render.SetScissorRect( 0, 0, 0, 0, false ) -- Disable after you are done
+      elseif (!shouldDrawRedDot && magnification > 1) then
+         local bone = self.Owner:GetViewModel():LookupBone(equippedScopeData.Bone);
 
-			if (!bone) then return end
+         if (!bone) then return end
 
-			local pos, ang = Vector(0,0,0), Angle(0,0,0)
-			local m = self.Owner:GetViewModel():GetBoneMatrix(bone)
-			if (m) then
-			pos, ang = m:GetTranslation(), m:GetAngles()
-			end
+         local pos, ang = Vector(0,0,0), Angle(0,0,0)
+         local m = self.Owner:GetViewModel():GetBoneMatrix(bone)
+         if (m) then
+         pos, ang = m:GetTranslation(), m:GetAngles()
+         end
 
-			local boneXPos = pos:ToScreen().x - ScrW() / 2;
+         local boneXPos = pos:ToScreen().x - ScrW() / 2;
 
-			local w, h = ScrW(), ScrH();
+         local w, h = ScrW(), ScrH();
 
-			if (self.mul > 0.9) then
-				local OldRT = render.GetRenderTarget()
-				render.SetRenderTarget( scopeTex ) -- Change the RenderTarget, so all drawing will be redirected to our new RT
+         if (self.mul > 0.9) then
+            local OldRT = render.GetRenderTarget()
+            render.SetRenderTarget( scopeTex ) -- Change the RenderTarget, so all drawing will be redirected to our new RT
 
-				render.Clear( 0, 0, 0, 255, true ) -- Floodfill with black color
+            render.Clear( 0, 0, 0, 255, true ) -- Floodfill with black color
 
-				cam.Start2D()
-					render.RenderView( {
-						origin = self.Owner:GetPos() + (self.Owner:Crouching() and self.Owner:GetViewOffsetDucked() or self.Owner:GetViewOffset()),
-						angles = self.Owner:EyeAngles(),
-						x = 0, 0,
-						w = rw, h = rh,
-						fov = math.floor(60 / magnification),
-						drawviewmodel = false
-					} )
-				cam.End2D()
+            cam.Start2D()
+               render.RenderView( {
+                  origin = self.Owner:GetPos() + (self.Owner:Crouching() and self.Owner:GetViewOffsetDucked() or self.Owner:GetViewOffset()),
+                  angles = self.Owner:EyeAngles(),
+                  x = 0, 0,
+                  w = rw, h = rh,
+                  fov = math.floor(60 / magnification),
+                  drawviewmodel = false
+               } )
+            cam.End2D()
 
-				render.SetRenderTarget( OldRT )
+            render.SetRenderTarget( OldRT )
 
-				surface.SetDrawColor(255, 255, 255, 255);
-				surface.SetMaterial(mat);
-				rDelta = -(ang.r - lastR) / 5;
+            surface.SetDrawColor(255, 255, 255, 255);
+            surface.SetMaterial(mat);
+            rDelta = -(ang.r - lastR) / 5;
 
-				local scopeRadius = ScrH() / equippedScopeData.ScopeRadius;
-				local _scopeOffset = equippedScopeData.ScopeOffset;
-				local scopeOffset = Vector(0, 0, 0);
-				if (_scopeOffset.x != 0) then
-					scopeOffset.x = ScrW() / _scopeOffset.x;
-				end
-				if (_scopeOffset.y != 0) then
-					scopeOffset.y = ScrH() / _scopeOffset.y;
-				end
+            local scopeRadius = ScrH() / equippedScopeData.ScopeRadius;
+            local _scopeOffset = equippedScopeData.ScopeOffset;
+            local scopeOffset = Vector(0, 0, 0);
+            if (_scopeOffset.x != 0) then
+               scopeOffset.x = ScrW() / _scopeOffset.x;
+            end
+            if (_scopeOffset.y != 0) then
+               scopeOffset.y = ScrH() / _scopeOffset.y;
+            end
 
-				local radii = scopeRadius + self.weaponKick.y * 40
+            local radii = scopeRadius + self.weaponKick.y * 40
 
 
-				mat:SetTexture("$basetexture", scopeTex);
-				render.SetScissorRect( (ScrW() / 2 - radii - boneXPos - 30) + ScrW() * 2 * (1 - self.mul) - scopeOffset.x,
-				(ScrH() / 2 - radii + rDelta * 0.6 - 30) + ScrH() * 2 * (1 - self.mul) - scopeOffset.y,
-				(ScrW() / 2 + radii + boneXPos + 30) - ScrW() * 2 * (1 - self.mul) + scopeOffset.x,
-				(ScrH() / 2 + radii + rDelta * 0.6 + 30) - ScrH() * 2 * (1 - self.mul) + scopeOffset.y,
-				true )
+            mat:SetTexture("$basetexture", scopeTex);
+            render.SetScissorRect( (ScrW() / 2 - radii - boneXPos - 30) + ScrW() * 2 * (1 - self.mul) - scopeOffset.x,
+            (ScrH() / 2 - radii + rDelta * 0.6 - 30) + ScrH() * 2 * (1 - self.mul) - scopeOffset.y,
+            (ScrW() / 2 + radii + boneXPos + 30) - ScrW() * 2 * (1 - self.mul) + scopeOffset.x,
+            (ScrH() / 2 + radii + rDelta * 0.6 + 30) - ScrH() * 2 * (1 - self.mul) + scopeOffset.y,
+            true )
 
-					render.OverrideAlphaWriteEnable(false, true);
-					draw.Circle(w / 2 + boneXPos + scopeOffset.x, h / 2 + rDelta * 0.6 + scopeOffset.y, radii, 180);
-					surface.SetMaterial(lensdirt);
-					draw.Circle(w / 2 + boneXPos + scopeOffset.x, h / 2 + rDelta * 0.6 + scopeOffset.y, radii, 180);
+               render.OverrideAlphaWriteEnable(false, true);
+               draw.Circle(w / 2 + boneXPos + scopeOffset.x, h / 2 + rDelta * 0.6 + scopeOffset.y, radii, 180);
+               surface.SetMaterial(lensdirt);
+               draw.Circle(w / 2 + boneXPos + scopeOffset.x, h / 2 + rDelta * 0.6 + scopeOffset.y, radii, 180);
 
-				render.SetScissorRect( 0, 0, 0, 0, false ) -- Disable after you are done
+            render.SetScissorRect( 0, 0, 0, 0, false ) -- Disable after you are done
 
-				render.SetScissorRect( ScrW() / 2 + boneXPos - 16, ScrH() / 2 - 16, ScrW() / 2 + 512 * self.mul + boneXPos, ScrH() / 2 + 512 * self.mul, true ) -- Enable the rect
-					surface.SetDrawColor(r, g, b, 230);
-					surface.DrawRect(ScrW() / 2, ScrH() / 2, 2, 2 )
+            render.SetScissorRect( ScrW() / 2 + boneXPos - 16, ScrH() / 2 - 16, ScrW() / 2 + 512 * self.mul + boneXPos, ScrH() / 2 + 512 * self.mul, true ) -- Enable the rect
+               surface.SetDrawColor(255, 0, 0, 230);
+               surface.DrawRect(ScrW() / 2, ScrH() / 2, 2, 2 )
 
-					surface.SetDrawColor(r, g, b, 110);
-					surface.DrawRect(ScrW() / 2 - 1, ScrH() / 2, 1, 2 )
-					surface.DrawRect(ScrW() / 2 + 2, ScrH() / 2, 1, 2 )
-					surface.DrawRect(ScrW() / 2, ScrH() / 2 - 1, 2, 1 )
-					surface.DrawRect(ScrW() / 2, ScrH() / 2 + 2, 2, 1 )
-				render.SetScissorRect( 0, 0, 0, 0, false ) -- Disable after you are done
+               surface.SetDrawColor(255, 0, 0, 110);
+               surface.DrawRect(ScrW() / 2 - 1, ScrH() / 2, 1, 2 )
+               surface.DrawRect(ScrW() / 2 + 2, ScrH() / 2, 1, 2 )
+               surface.DrawRect(ScrW() / 2, ScrH() / 2 - 1, 2, 1 )
+               surface.DrawRect(ScrW() / 2, ScrH() / 2 + 2, 2, 1 )
+            render.SetScissorRect( 0, 0, 0, 0, false ) -- Disable after you are done
 
-				lastR = Lerp(FrameTime() * 10, lastR, ang.r);
-			end
-		end
-	end
-
-	function drawReticle()
-		local reticle = "arrow";
-		local r = reticle_r:GetInt();
-		local g = reticle_g:GetInt();
-		local b = reticle_b:GetInt();
-
-		if (reticle == "dot") then
-
-			surface.SetDrawColor(r, g, b, 230);
-			surface.DrawRect(ScrW() / 2, ScrH() / 2, 2, 2 )
-
-			surface.SetDrawColor(r, g, b, 110);
-			surface.DrawRect(ScrW() / 2 - 1, ScrH() / 2, 1, 2 )
-			surface.DrawRect(ScrW() / 2 + 2, ScrH() / 2, 1, 2 )
-			surface.DrawRect(ScrW() / 2, ScrH() / 2 - 1, 2, 1 )
-			surface.DrawRect(ScrW() / 2, ScrH() / 2 + 2, 2, 1 )
-		elseif (reticle == "arrow") then
-			surface.SetDrawColor(r, g, b, 230);
-			surface.DrawLine(ScrW() / 2, ScrH() / 2, ScrW() / 2 - 8, ScrH() / 2 + 8);
-			surface.DrawLine(ScrW() / 2, ScrH() / 2, ScrW() / 2 + 8, ScrH() / 2 + 8 + 1);
-			for i = 1, 3 do
-				surface.DrawLine(ScrW() / 2, ScrH() / 2 - 1 + i, ScrW() / 2 - 8, ScrH() / 2 + 8 - 1 + i);
-				surface.DrawLine(ScrW() / 2, ScrH() / 2 - 1 + i, ScrW() / 2 + 8, ScrH() / 2 + 8 + i);
-			end
-		end
-	end
+            lastR = Lerp(FrameTime() * 10, lastR, ang.r);
+         end
+      end
+   end
 
    local GetPTranslation = LANG.GetParamTranslation
 
@@ -651,16 +621,16 @@ function SWEP:PrimaryAttack(worldsnd)
    end
 
    if (CLIENT) then
-		local magnification = 1;
-		for k,v in pairs(self.RegisteredAttachments) do
-			local equipped = self.EquippedAttachments[k];
-			if (equipped && equipped != "none") then
-				local magnif = self.RegisteredAttachments[k][equipped].Magnification;
-				if (magnif != 0) then
-					magnification = magnif;
-				end
-			end
-		end
+      local magnification = 1;
+      for k,v in pairs(self.RegisteredAttachments) do
+         local equipped = self.EquippedAttachments[k];
+         if (equipped && equipped != "none") then
+            local magnif = self.RegisteredAttachments[k][equipped].Magnification;
+            if (magnif != 0) then
+               magnification = magnif;
+            end
+         end
+      end
       if (self.Primary.Automatic) then
          if(self:GetIronsights() && !isEmpty) then
             self.weaponKick.y = (math.Clamp(self.Primary.Recoil, 0, 1) * recoilScale) / magnification;
@@ -680,7 +650,7 @@ function SWEP:PrimaryAttack(worldsnd)
          local time = v[2];
          if (self:GetIronsights()) then time = 0.01; end
          timer.Simple(time, function()
-         	if (!IsValid(self)) then return end
+            if (!IsValid(self)) then return end
             if not worldsnd then
                self:EmitSound(v[3], self.Primary.SoundLevel, 100, 1, CHAN_ITEM)
             elseif SERVER then
@@ -723,7 +693,7 @@ function SWEP:DryFire(setnext)
 
    setnext(self, CurTime() + 0.2)
 
-   self:Reload(false)
+   self:Reload()
 end
 
 function SWEP:CanPrimaryAttack()
@@ -796,7 +766,12 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
 
    if (SERVER) then
       if (self.bulletAtt != nil) then
-         self.bulletAtt(self, self.Owner:GetEyeTrace().HitPos)
+         local tr = util.TraceLine( {
+            start = self:GetOwner():EyePos(),
+            endpos = self:GetOwner():EyePos() + self:GetOwner():EyeAngles():Forward() * 10000
+         } )
+
+         self.bulletAtt(self, tr.HitPos)
       end
    end
 
@@ -871,11 +846,12 @@ end
 function SWEP:Deploy()
    --[[timer.Simple(0.5, function()
       if (self != nil && self.Owner != nil && IsValid(self.Owner)) then
-	      net.Start("InitCClient");
-	      net.Send(self.Owner);
+         net.Start("InitCClient");
+         net.Send(self.Owner);
       end
    end)]]--
 
+   self.IsCustomizing = false;
    self:SetIronsights(false)
    self.Owner:SetFOV(0, 0.04)
    if (SERVER and self.Primary.ClipSize > 0) then
@@ -885,7 +861,7 @@ function SWEP:Deploy()
    for k, v in pairs(self.CustomSounds) do
       if (v[1] == "Deploy") then
          timer.Simple(v[2], function()
-         	if (!IsValid(self)) then return end
+            if (!IsValid(self)) then return end
             if not worldsnd then
                self:EmitSound(v[3], self.Primary.SoundLevel, 100, 1, CHAN_ITEM)
             elseif SERVER then
@@ -894,26 +870,19 @@ function SWEP:Deploy()
          end)
       end
    end
-
-   self.IsCustomizing = false;
-   if (SERVER) then
-      self:BroadcastClientsideVar("wep.IsCustomizing", false, "Bool");
-   end
    return true
 end
 
-function SWEP:Reload(bypass)
-   if (self.IsCustomizing && !bypass) then return; end;
+function SWEP:Reload()
+   if (self.IsCustomizing) then return; end;
    if (CLIENT) then
       self.CustomizeMul = 0;
    end
-   if ( (self:Clip1() == self.Primary.ClipSize or self:GetOwner():GetAmmoCount( self.Primary.Ammo ) <= 0) && !bypass ) then return end
+   if ( self:Clip1() == self.Primary.ClipSize or self:GetOwner():GetAmmoCount( self.Primary.Ammo ) <= 0 ) then return end
    if (self:Clip1() == 0) then
     self:DefaultReload(self.EmptyReloadAnim)
-    self:SendWeaponAnim(self.EmptyReloadAnim);
    else
     self:DefaultReload(self.ReloadAnim)
-    self:SendWeaponAnim(self.ReloadAnim);
    end
    self:SetIronsights( false )
 
@@ -922,7 +891,7 @@ function SWEP:Reload(bypass)
          local time = v[2];
          if (self:GetIronsights()) then time = 0.01; end
          timer.Simple(time, function()
-         	if (!IsValid(self)) then return end
+            if (!IsValid(self)) then return end
             if not worldsnd then
                self:EmitSound(v[3], self.Primary.SoundLevel, 100, 1, CHAN_ITEM)
             elseif SERVER then
@@ -952,7 +921,7 @@ function SWEP:Ammo1()
 end
 
 function SWEP:Holster()
-   if (IsValid(self.Owner) && self.Owner:GetActiveWeapon() == self && self.IsCustomizing && self.RegisteredAttachments != {}) then return false end;
+   if (self.IsCustomizing) then return false end;
    self.IsCustomizing = false;
 
    if (CLIENT) then
@@ -1024,66 +993,7 @@ end
 local SF_WEAPON_START_CONSTRAINED = 1
 
 -- Picked up by player. Transfer of stored ammo and such.
-
-SWEP.HasInitVars = false;
-
 function SWEP:Equip(newowner)
-
-   if (SERVER && !self.HasInitVars) then
-      self:AttachmentRegister();
-
-      local attData = self.RegisteredAttachments;
-
-      local actualData = {};
-
-      for k, v in pairs(attData) do
-         actualData[k] = {};
-         for i, j in pairs(attData[k]) do
-            actualData[k][i] = {};
-            actualData[k][i].Bone = attData[k][i].Bone;
-            actualData[k][i].ModelPos = attData[k][i].ModelPos;
-            actualData[k][i].ModelAng = attData[k][i].ModelAng;
-            actualData[k][i].ModelSize = attData[k][i].ModelSize;
-            actualData[k][i].Parent = attData[k][i].Parent;
-
-            actualData[k][i].WModelBone = attData[k][i].WModelBone;
-            actualData[k][i].WModelPos = attData[k][i].WModelPos;
-            actualData[k][i].WModelAng = attData[k][i].WModelAng;
-            actualData[k][i].WModelSize = attData[k][i].WModelSize;
-            actualData[k][i].WModelParent = attData[k][i].WModelParent;
-
-
-            actualData[k][i].AttachmentName = attData[k][i].AttachmentName;
-            actualData[k][i].Model = attData[k][i].Model;
-            actualData[k][i].Image = attData[k][i].Image;
-            actualData[k][i].Group = attData[k][i].Group;
-            actualData[k][i].Magnification = attData[k][i].Magnification;
-            if (attData[k][i].Description) then
-               actualData[k][i].Description = attData[k][i].Description;
-            else
-               actualData[k][i].Description = "Default Attachment Description";
-            end
-            actualData[k][i].Reticle = attData[k][i].Reticle;
-            actualData[k][i].ScopeRadius = attData[k][i].ScopeRadius;
-            actualData[k][i].HideModel = attData[k][i].HideModel;
-            actualData[k][i].ScopeOffset = attData[k][i].ScopeOffset;
-         end
-      end
-
-      timer.Simple(0.01, function()
-         local isDone = false;
-         while(IsValid(self) && actualData != nil && actualData != {} && !isDone) do
-            net.Start("RegisterAttachments");
-               net.WriteTable(actualData);
-               net.WriteEntity(self);
-            net.Broadcast();
-            isDone = true;
-         end
-      end)
-
-      self.HasInitVars = true;
-   end
-
    if SERVER then
       if self:IsOnFire() then
          self:Extinguish()
@@ -1161,74 +1071,193 @@ function SWEP:AttachmentRegister() end
 
 SWEP.HasReceivedAtt = false;
 
+if (CLIENT) then
+   net.Receive("RegisterAttachments", function(len)
+      local tbl = net.ReadTable();
+      local ent = net.ReadEntity();
+
+      if (IsValid(ent) && ent.EquippedAttachments != nil) then
+         for k, v in pairs(tbl) do
+            ent.EquippedAttachments[k] = "none";
+            for i, j in pairs(tbl[k]) do
+               tbl[k][i].Material = Material(j.Image);
+               --print("registered attachment " ..j.AttachmentName.. " on " ..tostring(ent));
+            end
+         end
+         ent.RegisteredAttachments = tbl;
+         local hasFinished = false;
+         --while (ent.Initialize != nil && ent.DrawWorldModel != nil && !hasFinished) do
+            ent.vRenderOrder = nil;
+            ent:Initialize();
+            ent.HasReceivedAtt = true;
+            ent:DrawWorldModel();
+            ent.wRenderOrder = nil;
+            hasFinished = true;
+         --end
+      end
+   end)
+
+   net.Receive("InitCClient", function(len)
+      timer.Simple(0.3, function()
+         local hasAtt = false;
+
+         for k,v in pairs(LocalPlayer():GetActiveWeapon().RegisteredAttachments) do
+            hasAtt = true;
+         end
+
+         if (!hasAtt) then
+            net.Start("InitClientCurrent");
+            net.SendToServer();
+         end
+      end)
+   end)
+
+   net.Receive("EquipAttachment", function(len)
+      local condition = net.ReadBool();
+      local cat = net.ReadString();
+      local attName = net.ReadString();
+      local plName = net.ReadString();
+      local equippedTbl = net.ReadTable();
+
+      local pl = nil;
+      local plWep = nil;
+
+      for k,v in pairs(player.GetAll()) do
+         if (plName == v:Nick()) then
+            pl = v;
+            plWep = pl:GetActiveWeapon();
+         end
+      end
+
+      if (plWep.RegisteredAttachments != nil && plWep.RegisteredAttachments[cat] != nil && plWep.RegisteredAttachments[cat][attName] != nil) then
+         if (condition) then
+            plWep.VElements[attName].hide = false;
+            if (plWep.VElements[plWep.RegisteredAttachments[cat][attName].Parent] != nil) then
+               plWep.VElements[plWep.RegisteredAttachments[cat][attName].Parent].hide = false;
+            end
+
+            if (!plWep.RegisteredAttachments[cat][attName].HideModel) then
+               plWep.WElements[attName].hide = false;
+            end
+            if (plWep.WElements[plWep.RegisteredAttachments[cat][attName].WModelParent] != nil) then
+               plWep.WElements[plWep.RegisteredAttachments[cat][attName].WModelParent].hide = false;
+            end
+         else
+            plWep.VElements[attName].hide = true;
+            if (plWep.VElements[plWep.RegisteredAttachments[cat][attName].Parent] != nil) then
+               plWep.VElements[plWep.RegisteredAttachments[cat][attName].Parent].hide = true;
+            end
+
+            if (!plWep.RegisteredAttachments[cat][attName].HideModel) then
+               plWep.WElements[attName].hide = true;
+            end
+            if (plWep.WElements[plWep.RegisteredAttachments[cat][attName].WModelParent] != nil) then
+               plWep.WElements[plWep.RegisteredAttachments[cat][attName].WModelParent].hide = true;
+            end
+         end
+      end
+      plWep.EquippedAttachments = equippedTbl;
+   end)
+
+   net.Receive("ClientsideVar", function(len)
+      local plName = net.ReadString();
+      local var = net.ReadString();
+      local _type = net.ReadString();
+      local val = nil;
+
+      for k,v in pairs(net) do
+         if (k == ("Read" .._type)) then
+            if (_type == "Int") then
+               val = net[k](32);
+            else
+               val = net[k]();
+            end
+         end
+      end
+
+      local wep = nil;
+      for k,v in pairs(player.GetAll()) do
+         if (v:Nick() == plName) then
+            wep = v:GetActiveWeapon();
+         end
+      end
+
+      local processedVar = string.Split(var, ".");
+      if (processedVar[2] && processedVar[3]) then
+         wep[processedVar[2]][processedVar[3]] = val;
+      elseif (processedVar[2]) then
+         wep[processedVar[2]] = val;
+      end
+      --print("Changing " ..var.. " to " ..tostring(val).. " on " ..tostring(wep));
+   end)
+end
+
 function SWEP:Initialize()
 
-	if (SERVER) then
-		self:AttachmentRegister();
+   if (SERVER) then
+      self:AttachmentRegister();
 
-		local attData = self.RegisteredAttachments;
+      local attData = self.RegisteredAttachments;
 
-		local actualData = {};
+      local actualData = {};
 
-		for k, v in pairs(attData) do
-			actualData[k] = {};
-			for i, j in pairs(attData[k]) do
-				actualData[k][i] = {};
-				actualData[k][i].Bone = attData[k][i].Bone;
-				actualData[k][i].ModelPos = attData[k][i].ModelPos;
-				actualData[k][i].ModelAng = attData[k][i].ModelAng;
-				actualData[k][i].ModelSize = attData[k][i].ModelSize;
-				actualData[k][i].Parent = attData[k][i].Parent;
+      for k, v in pairs(attData) do
+         actualData[k] = {};
+         for i, j in pairs(attData[k]) do
+            actualData[k][i] = {};
+            actualData[k][i].Bone = attData[k][i].Bone;
+            actualData[k][i].ModelPos = attData[k][i].ModelPos;
+            actualData[k][i].ModelAng = attData[k][i].ModelAng;
+            actualData[k][i].ModelSize = attData[k][i].ModelSize;
+            actualData[k][i].Parent = attData[k][i].Parent;
 
-				actualData[k][i].WModelBone = attData[k][i].WModelBone;
-				actualData[k][i].WModelPos = attData[k][i].WModelPos;
-				actualData[k][i].WModelAng = attData[k][i].WModelAng;
-				actualData[k][i].WModelSize = attData[k][i].WModelSize;
-				actualData[k][i].WModelParent = attData[k][i].WModelParent;
+            actualData[k][i].WModelBone = attData[k][i].WModelBone;
+            actualData[k][i].WModelPos = attData[k][i].WModelPos;
+            actualData[k][i].WModelAng = attData[k][i].WModelAng;
+            actualData[k][i].WModelSize = attData[k][i].WModelSize;
+            actualData[k][i].WModelParent = attData[k][i].WModelParent;
 
 
-				actualData[k][i].AttachmentName = attData[k][i].AttachmentName;
-				actualData[k][i].Model = attData[k][i].Model;
-				actualData[k][i].Image = attData[k][i].Image;
-				actualData[k][i].Group = attData[k][i].Group;
-				actualData[k][i].Magnification = attData[k][i].Magnification;
+            actualData[k][i].AttachmentName = attData[k][i].AttachmentName;
+            actualData[k][i].Model = attData[k][i].Model;
+            actualData[k][i].Image = attData[k][i].Image;
+            actualData[k][i].Group = attData[k][i].Group;
+            actualData[k][i].Magnification = attData[k][i].Magnification;
             if (attData[k][i].Description) then
                actualData[k][i].Description = attData[k][i].Description;
             else
                actualData[k][i].Description = "Default Attachment Description";
             end
             actualData[k][i].Reticle = attData[k][i].Reticle;
-				actualData[k][i].ScopeRadius = attData[k][i].ScopeRadius;
-				actualData[k][i].HideModel = attData[k][i].HideModel;
-				actualData[k][i].ScopeOffset = attData[k][i].ScopeOffset;
-			end
-		end
-
-      timer.Simple(1, function()
-         local isDone = false;
-         while(IsValid(self) && actualData != nil && actualData != {} && !isDone) do
-            net.Start("RegisterAttachments");
-               net.WriteTable(actualData);
-               net.WriteEntity(self);
-            net.Broadcast();
-            isDone = true;
+            actualData[k][i].ScopeRadius = attData[k][i].ScopeRadius;
+            actualData[k][i].HideModel = attData[k][i].HideModel;
+            actualData[k][i].ScopeOffset = attData[k][i].ScopeOffset;
          end
-      end)
+      end
 
-	end
+      local isDone = false;
+      while(IsValid(self) && actualData != nil && !isDone) do
+         net.Start("RegisterAttachments");
+            net.WriteTable(actualData);
+            net.WriteEntity(self);
+         net.Broadcast();
+         isDone = true;
+      end
 
-	for k, v in pairs(self.RegisteredAttachments) do
-		for i, j in pairs(self.RegisteredAttachments[k]) do
-			self.VElements[j.AttachmentName] = { type = "Model", hide = true, model = j.Model, bone = j.Bone, rel = j.Parent, pos = j.ModelPos, angle = j.ModelAng, size = j.ModelSize, color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} };
-			self.WElements[j.AttachmentName] = { type = "Model", hide = true, model = j.Model, bone = j.WModelBone, rel = j.WModelParent, pos = j.WModelPos, angle = j.WModelAng, size = j.WModelSize, color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} };
-			if (j.Parent && j.Parent != "" && self.WElements != nil && self.WElements[j.WModelParent] != nil) then
-				self.VElements[j.Parent].hide = true;
-			end
-			if (j.WModelParent && j.WModelParent != "" && self.WElements != nil && self.WElements[j.WModelParent] != nil) then
-				self.WElements[j.WModelParent].hide = true;
-			end
-		end
-	end
+   end
+
+   for k, v in pairs(self.RegisteredAttachments) do
+      for i, j in pairs(self.RegisteredAttachments[k]) do
+         self.VElements[j.AttachmentName] = { type = "Model", hide = true, model = j.Model, bone = j.Bone, rel = j.Parent, pos = j.ModelPos, angle = j.ModelAng, size = j.ModelSize, color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} };
+         self.WElements[j.AttachmentName] = { type = "Model", hide = true, model = j.Model, bone = j.WModelBone, rel = j.WModelParent, pos = j.WModelPos, angle = j.WModelAng, size = j.WModelSize, color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} };
+         if (j.Parent && j.Parent != "" && self.WElements != nil && self.WElements[j.WModelParent] != nil) then
+            self.VElements[j.Parent].hide = true;
+         end
+         if (j.WModelParent && j.WModelParent != "" && self.WElements != nil && self.WElements[j.WModelParent] != nil) then
+            self.WElements[j.WModelParent].hide = true;
+         end
+      end
+   end
 
    if CLIENT and self:Clip1() == -1 then
       self:SetClip1(self.Primary.DefaultClip)
@@ -1283,18 +1312,9 @@ SWEP.punched = false;
 SWEP.VReleased = true;
 SWEP.IsCustomizing = false;
 
-SWEP.ReloadOnNotCustomizing = false;
-
 -- Note that if you override Think in your SWEP, you should call
 -- BaseClass.Think(self) so as not to break ironsights
 function SWEP:Think()
-
-   if (self.ReloadOnNotCustomizing && !self.IsCustomizing) then
-      timer.Simple(0.2, function()
-         self:Reload(true);
-      end)
-      self.ReloadOnNotCustomizing = false;
-   end
 
    coneAdd = Lerp(FrameTime() * 10, coneAdd, 0);
    if (self.HasScope) then
@@ -1433,93 +1453,94 @@ if (CLIENT) then
 
     function SWEP:Think()
 
-    	local hasAttachment = false;
+      local hasAttachment = false;
 
-    	for k,v in pairs(self.RegisteredAttachments) do
-    		for i, j in pairs(self.RegisteredAttachments[k]) do
-    			if (self.Owner:GetNWInt("Has" ..i) == 1 || self:GetNWInt("Has" ..i) == 1) then
-    				hasAttachment = true;
-    			end
-    		end
-    	end
+      for k,v in pairs(self.RegisteredAttachments) do
+         for i, j in pairs(self.RegisteredAttachments[k]) do
+            if (self.Owner:GetNWInt("Has" ..i) == 1 || self:GetNWInt("Has" ..i) == 1) then
+               hasAttachment = true;
+            end
+         end
+      end
 
-    	if (!hasAttachment) then
-    		self.IsCustomizing = false;
-    	end
+      if (!hasAttachment) then
+         self.IsCustomizing = false;
+      end
 
-		if (self.VReleased && input.IsKeyDown(_G["KEY_" ..string.upper(cstmKey:GetString())]) && !isChatting && table.Count(self.RegisteredAttachments) > 0 && hasAttachment && (self.CustomizeMul > 0.98 || self.CustomizeMul < 0.05)) then
-			self.VReleased = false;
-			self.IsCustomizing = !self.IsCustomizing;
-			net.Start( "CustomizeEvent" )
-			net.WriteBool(self.IsCustomizing);
-			net.SendToServer();
-		elseif (!input.IsKeyDown(_G["KEY_" ..string.upper(cstmKey:GetString())])) then
-			self.VReleased = true;
-		end
+      if (self.VReleased && input.IsKeyDown(KEY_V) && !isChatting && table.Count(self.RegisteredAttachments) > 0 && hasAttachment && (self.CustomizeMul > 0.98 || self.CustomizeMul < 0.05)) then
+         self.VReleased = false;
+         self.IsCustomizing = !self.IsCustomizing;
+         net.Start( "CustomizeEvent" )
+         net.WriteBool(self.IsCustomizing);
+         net.SendToServer();
+      elseif (!input.IsKeyDown(KEY_V)) then
+         self.VReleased = true;
+      end
 
-		local count = -1;
-		for k,v in pairs(self.RegisteredAttachments) do
+      local count = -1;
+      for k,v in pairs(self.RegisteredAttachments) do
 
-			local __ct = 0;
+         local __ct = 0;
 
-			for i,j in pairs(v) do
-   				if (self.Owner:GetNWInt("Has" ..j.AttachmentName) == 1 || self:GetNWInt("Has" ..j.AttachmentName) == 1) then
-   					__ct = __ct + 1;
-   				end
-			end
+         for i,j in pairs(v) do
+               if (self.Owner:GetNWInt("Has" ..j.AttachmentName) == 1 || self:GetNWInt("Has" ..j.AttachmentName) == 1) then
+                  __ct = __ct + 1;
+               end
+         end
 
-			if (__ct > 0) then
-				count = count + 1;
-			end
+         if (__ct > 0) then
+            count = count + 1;
+         end
 
-			if (self.pressedKeys["KEY_" ..count + 1] == nil) then self.pressedKeys["KEY_" ..count + 1] = 0; end
+         if (self.pressedKeys["KEY_" ..count + 1] == nil) then self.pressedKeys["KEY_" ..count + 1] = 0; end
 
-			if (self.pressedKeys["KEY_" ..count + 1] == 0 && input.IsKeyDown(_G["KEY_" .. count + 1]) && self.IsCustomizing) then
-				local equipNext = false;
+         if (self.pressedKeys["KEY_" ..count + 1] == 0 && input.IsKeyDown(_G["KEY_" .. count + 1]) && self.IsCustomizing) then
+            local equipNext = false;
 
-				local ___ct = 0;
-				for i,j in pairs(v) do
-	   				if (self.Owner:GetNWInt("Has" ..j.AttachmentName) == 1 || self:GetNWInt("Has" ..j.AttachmentName) == 1) then
-	   					___ct = ___ct + 1;
-	   				end
-				end
+            local ___ct = 0;
+            for i,j in pairs(v) do
+                  if (self.Owner:GetNWInt("Has" ..j.AttachmentName) == 1 || self:GetNWInt("Has" ..j.AttachmentName) == 1) then
+                     ___ct = ___ct + 1;
+                  end
+            end
 
-				local selectedCat = k;
-				local selectedSubCat = v;
+            local selectedCat = k;
+            local selectedSubCat = v;
 
-				if (___ct == 0) then
-					for a,b in pairs(self.RegisteredAttachments) do
-						for c,d in pairs(b) do
-			   				if ((self.Owner:GetNWInt("Has" ..d.AttachmentName) == 1 || self:GetNWInt("Has" ..d.AttachmentName) == 1) && selectedSubCat == v) then
-			   					selectedCat = a;
-			   					selectedSubCat = b;
-			   				end
-		   				end
-					end
-				end
+            if (___ct == 0) then
+               for a,b in pairs(self.RegisteredAttachments) do
+                  for c,d in pairs(b) do
+                        if ((self.Owner:GetNWInt("Has" ..d.AttachmentName) == 1 || self:GetNWInt("Has" ..d.AttachmentName) == 1) && selectedSubCat == v) then
+                           selectedCat = a;
+                           selectedSubCat = b;
+                        end
+                     end
+               end
+            end
 
-				local ct = 0;
+            local ct = 0;
 
-				for i,j in pairs(selectedSubCat) do
-	   				if (self.Owner:GetNWInt("Has" ..j.AttachmentName) == 1 || self:GetNWInt("Has" ..j.AttachmentName) == 1) then
-	   					ct = ct + 1;
-	   				end
-				end
+            for i,j in pairs(selectedSubCat) do
+                  if (self.Owner:GetNWInt("Has" ..j.AttachmentName) == 1 || self:GetNWInt("Has" ..j.AttachmentName) == 1) then
+                     ct = ct + 1;
+                  end
+            end
 
-				local _ct = 0;
-				for i,j in pairs(selectedSubCat) do
-	   				if (self.Owner:GetNWInt("Has" ..j.AttachmentName) == 1 || self:GetNWInt("Has" ..j.AttachmentName) == 1) then
-	   					local equipped = self.EquippedAttachments[selectedCat];
-	   					if (equipped == "none" || equipNext) then
-	   						if (self.EquippedAttachments[selectedCat] != "none") then
-			   					net.Start("EquipAttachment");
-			   						net.WriteBool(false);
-		   							net.WriteString(selectedCat);
-			   						net.WriteString(self.EquippedAttachments[selectedCat]);
-			   						net.WriteTable(self.EquippedAttachments);
-			   					net.SendToServer();
-	   						end
-	   						self.EquippedAttachments[selectedCat] = i;
+            local _ct = 0;
+            for i,j in pairs(selectedSubCat) do
+                  if (self.Owner:GetNWInt("Has" ..j.AttachmentName) == 1 || self:GetNWInt("Has" ..j.AttachmentName) == 1) then
+                     local equipped = self.EquippedAttachments[selectedCat];
+                     print(equipped)
+                     if (equipped == "none" || equipNext) then
+                        if (self.EquippedAttachments[selectedCat] != "none") then
+                           net.Start("EquipAttachment");
+                              net.WriteBool(false);
+                              net.WriteString(selectedCat);
+                              net.WriteString(self.EquippedAttachments[selectedCat]);
+                              net.WriteTable(self.EquippedAttachments);
+                           net.SendToServer();
+                        end
+                        self.EquippedAttachments[selectedCat] = i;
 
                         net.Start("EquipAttachment");
                            net.WriteBool(true);
@@ -1528,45 +1549,45 @@ if (CLIENT) then
                            net.WriteTable(self.EquippedAttachments);
                         net.SendToServer();
                         break;
-	   					end
+                     end
 
-	   					if (equipped == i) then
-		   					equipNext = true;
-		   					if (ct == (_ct + 1)) then
-								self.VElements[i].hide = true;
-								self.WElements[i].hide = true;
-			   					net.Start("EquipAttachment");
-			   						net.WriteBool(false);
-		   							net.WriteString(selectedCat);
-			   						net.WriteString(self.EquippedAttachments[selectedCat]);
-			   						net.WriteTable(self.EquippedAttachments);
-			   					net.SendToServer();
-		   						self.EquippedAttachments[selectedCat] = "none";
-		   					end
-	   					end
+                     if (equipped == i) then
+                        equipNext = true;
+                        if (ct == (_ct + 1)) then
+                        self.VElements[i].hide = true;
+                        self.WElements[i].hide = true;
+                           net.Start("EquipAttachment");
+                              net.WriteBool(false);
+                              net.WriteString(selectedCat);
+                              net.WriteString(self.EquippedAttachments[selectedCat]);
+                              net.WriteTable(self.EquippedAttachments);
+                           net.SendToServer();
+                           self.EquippedAttachments[selectedCat] = "none";
+                        end
+                     end
 
-	   					net.Start("EquipAttachment");
-	   						net.WriteBool(true);
-   							net.WriteString(selectedCat);
-	   						net.WriteString(self.EquippedAttachments[selectedCat]);
-	   						net.WriteTable(self.EquippedAttachments);
-	   					net.SendToServer();
-						_ct = _ct + 1;
-	   				end
-				end
-				surface.PlaySound("weapons/weapon_deploy" ..math.random(1, 3).. ".wav");
-				self.pressedKeys["KEY_" ..count + 1] = 1;
-			elseif (self.pressedKeys["KEY_" ..count + 1] == 1 && !input.IsKeyDown(_G["KEY_" .. count + 1])) then
-				self.pressedKeys["KEY_" ..count + 1] = 0;
-			end
-		end
+                     net.Start("EquipAttachment");
+                        net.WriteBool(true);
+                        net.WriteString(selectedCat);
+                        net.WriteString(self.EquippedAttachments[selectedCat]);
+                        net.WriteTable(self.EquippedAttachments);
+                     net.SendToServer();
+                  _ct = _ct + 1;
+                  end
+            end
+            surface.PlaySound("weapons/weapon_deploy" ..math.random(1, 3).. ".wav");
+            self.pressedKeys["KEY_" ..count + 1] = 1;
+         elseif (self.pressedKeys["KEY_" ..count + 1] == 1 && !input.IsKeyDown(_G["KEY_" .. count + 1])) then
+            self.pressedKeys["KEY_" ..count + 1] = 0;
+         end
+      end
 
-		self.CustomizeMul = Lerp(FrameTime() * 5, self.CustomizeMul, (self.IsCustomizing and 1) or 0);
+      self.CustomizeMul = Lerp(FrameTime() * 5, self.CustomizeMul, (self.IsCustomizing and 1) or 0);
 
-		self.weaponKick = LerpVector(FrameTime() * 15, self.weaponKick, Vector(0, 0, 0));
+      self.weaponKick = LerpVector(FrameTime() * 15, self.weaponKick, Vector(0, 0, 0));
 
-		if (!releasedSinceLast && !input.IsMouseDown(MOUSE_LEFT)) then releasedSinceLast = true; end
-		if (self:Clip1() == 0) then isEmpty = true; else isEmpty = false; end
+      if (!releasedSinceLast && !input.IsMouseDown(MOUSE_LEFT)) then releasedSinceLast = true; end
+      if (self:Clip1() == 0) then isEmpty = true; else isEmpty = false; end
   end
 
 
@@ -1608,8 +1629,8 @@ if (CLIENT) then
      ang:RotateAroundAxis(ang:Forward() * ang:Right(), SmoothEyeAngles.p * swayMult);
      ang:RotateAroundAxis(ang:Right(), -math.Clamp(zVelocity, -10, 10)); 
 
-	ang:RotateAroundAxis(ang:Right(), self.CustomizeData.ang.y * self.CustomizeMul);
-	ang:RotateAroundAxis(ang:Up(), self.CustomizeData.ang.r * self.CustomizeMul);
+   ang:RotateAroundAxis(ang:Right(), self.CustomizeData.ang.y * self.CustomizeMul);
+   ang:RotateAroundAxis(ang:Up(), self.CustomizeData.ang.r * self.CustomizeMul);
 
      pos = pos + Vector(SmoothEyeAngles.y / 8 * swayMult, 0, SmoothEyeAngles.p / 2 * swayMult);
      pos = pos + (self.weaponKick.x + self.IronSightsPos.x + self.IronSightsPosAdd.x) * ang:Right() * self.mul + (self.CustomizeData.pos.x) * ang:Right() * self.CustomizeMul;
@@ -1747,7 +1768,7 @@ if CLIENT then
    SWEP.wRenderOrder = nil
    function SWEP:DrawWorldModel()
       if (self.ShowWorldModel == nil or self.ShowWorldModel) then
-         if (self.CrotchGun && IsValid(self.Owner) && self.Owner:Alive() && self.Owner:GetAttachment(self.Owner:LookupAttachment("anim_attachment_rh"))) then
+         if (self.CrotchGun && IsValid(self.Owner) && self.Owner:Alive()) then
             local hand, offset, rotate
 
                if not IsValid(self.Owner) then
@@ -2081,116 +2102,116 @@ if CLIENT then
 end
 
 if (SERVER) then
-	function SWEP:RegisterAttachment(name, bone, modelPos, modelAng, modelSize, parent, wmodelBone, wmodelPos, wmodelAng, wmodelSize, wmodelParent, ironsightpos, ironsightang)
-		for i,j in pairs(scripted_ents.GetList()) do
-			if(j.t.AttachmentName != nil && j.t.AttachmentName == name && j.t.Group != nil) then
-				local data = j.t;
-				data.IronSightPos = ironsightpos; data.IronSightAng = data.ironsightang;
-				data.Bone = bone; data.ModelPos = modelPos; data.ModelAng = modelAng; data.ModelSize = modelSize;
-				data.WModelBone = wmodelBone; data.WModelPos = wmodelPos; data.WModelAng = wmodelAng; data.WModelSize = wmodelSize;
-				if (parent != "") then
-					data.Parent = parent;
-				else
-					data.Parent = "";
-				end
+   function SWEP:RegisterAttachment(name, bone, modelPos, modelAng, modelSize, parent, wmodelBone, wmodelPos, wmodelAng, wmodelSize, wmodelParent, ironsightpos, ironsightang)
+      for i,j in pairs(scripted_ents.GetList()) do
+         if(j.t.AttachmentName != nil && j.t.AttachmentName == name && j.t.Group != nil) then
+            local data = j.t;
+            data.IronSightPos = ironsightpos; data.IronSightAng = data.ironsightang;
+            data.Bone = bone; data.ModelPos = modelPos; data.ModelAng = modelAng; data.ModelSize = modelSize;
+            data.WModelBone = wmodelBone; data.WModelPos = wmodelPos; data.WModelAng = wmodelAng; data.WModelSize = wmodelSize;
+            if (parent != "") then
+               data.Parent = parent;
+            else
+               data.Parent = "";
+            end
 
-				if (wmodelParent != "") then
-					data.WModelParent = wmodelParent;
-				else
-					data.Parent = "";
-				end
+            if (wmodelParent != "") then
+               data.WModelParent = wmodelParent;
+            else
+               data.Parent = "";
+            end
 
-				if (self.RegisteredAttachments[data.Group] == nil) then
-					self.RegisteredAttachments[data.Group] = {};
-				end
-				self.RegisteredAttachments[data.Group][data.AttachmentName] = data;
-			end
-		end
-	end
+            if (self.RegisteredAttachments[data.Group] == nil) then
+               self.RegisteredAttachments[data.Group] = {};
+            end
+            self.RegisteredAttachments[data.Group][data.AttachmentName] = data;
+         end
+      end
+   end
 
-	net.Receive( "CustomizeEvent", function( len, ply )
-		local condition = net.ReadBool();
-	 	ply:GetActiveWeapon().IsCustomizing = condition;
- 		ply:GetActiveWeapon().AllowDrop = !condition;
-	 	if (condition) then
+   net.Receive( "CustomizeEvent", function( len, ply )
+      local condition = net.ReadBool();
+      ply:GetActiveWeapon().IsCustomizing = condition;
+      ply:GetActiveWeapon().AllowDrop = !condition;
+      if (condition) then
          ply:GetActiveWeapon():SetIronsights(false);
          ply:GetActiveWeapon():SetZoom(false)
          if(IsValid(ply)) then
             ply:SetFOV(0, 0.2)
          end
          ply:GetActiveWeapon():SetHoldType("magic");
-	 	else
+      else
          ply:GetActiveWeapon():SetHoldType(ply:GetActiveWeapon().HoldType);
       end
-	end )
+   end )
 
-	net.Receive("EquipAttachment", function(len, ply)
-		local condition = net.ReadBool();
-		local cat = net.ReadString();
-		local attName = net.ReadString();
-		local equippedTbl = net.ReadTable();
-		local wep = ply:GetActiveWeapon();
-		if (wep.RegisteredAttachments[cat] != nil && wep.RegisteredAttachments[cat][attName] != nil) then
-			if (condition && wep.RegisteredAttachments[cat][attName].EquipFnc != nil) then
-				local ent = nil;
-				for k, v in pairs(scripted_ents.GetList()) do
-					if (v.t.AttachmentName != nil && v.t.AttachmentName == attName) then
-						ent = v.t;
-					end
-				end
+   net.Receive("EquipAttachment", function(len, ply)
+      local condition = net.ReadBool();
+      local cat = net.ReadString();
+      local attName = net.ReadString();
+      local equippedTbl = net.ReadTable();
+      local wep = ply:GetActiveWeapon();
+      if (wep.RegisteredAttachments[cat] != nil && wep.RegisteredAttachments[cat][attName] != nil) then
+         if (condition && wep.RegisteredAttachments[cat][attName].EquipFnc != nil) then
+            local ent = nil;
+            for k, v in pairs(scripted_ents.GetList()) do
+               if (v.t.AttachmentName != nil && v.t.AttachmentName == attName) then
+                  ent = v.t;
+               end
+            end
             if (wep.RegisteredAttachments[cat][attName].ShootBullet != nil) then
                wep.bulletAtt = wep.RegisteredAttachments[cat][attName].ShootBullet;
             elseif (cat == "Magazine") then
                wep.bulletAtt = nil;
             end
-				wep.RegisteredAttachments[cat][attName].EquipFnc(wep, ent);
-				wep:SetNWInt("Has" ..attName, 1);
-				wep.Owner:SetNWInt("Has" ..attName, 0);
-			elseif (!condition && wep.RegisteredAttachments[cat][attName].DequipFnc != nil) then
-				local ent = nil;
-				for k, v in pairs(scripted_ents.GetList()) do
-					if (v.t.AttachmentName != nil && v.t.AttachmentName == attName) then
-						ent = v.t;
-					end
-				end
+            wep.RegisteredAttachments[cat][attName].EquipFnc(wep, ent);
+            wep:SetNWInt("Has" ..attName, 1);
+            wep.Owner:SetNWInt("Has" ..attName, 0);
+         elseif (!condition && wep.RegisteredAttachments[cat][attName].DequipFnc != nil) then
+            local ent = nil;
+            for k, v in pairs(scripted_ents.GetList()) do
+               if (v.t.AttachmentName != nil && v.t.AttachmentName == attName) then
+                  ent = v.t;
+               end
+            end
             if (wep.RegisteredAttachments[cat][attName].ShootBullet == nil && cat == "Magazine") then
                wep.bulletAtt = nil;
             end
-				wep.RegisteredAttachments[cat][attName].DequipFnc(wep, ent);
-				wep:SetNWInt("Has" ..attName, 0);
-				wep.Owner:SetNWInt("Has" ..attName, 1);
-			end
-		end
+            wep.RegisteredAttachments[cat][attName].DequipFnc(wep, ent);
+            wep:SetNWInt("Has" ..attName, 0);
+            wep.Owner:SetNWInt("Has" ..attName, 1);
+         end
+      end
 
       if (attName == "none" && cat == "Magazine") then
          wep.bulletAtt = nil;
       end
 
-		net.Start("EquipAttachment");
-			net.WriteBool(condition);
-			net.WriteString(cat);
-			net.WriteString(attName);
-			net.WriteString(ply:Nick());
-			net.WriteTable(equippedTbl);
-		net.Broadcast();
-	end)
+      net.Start("EquipAttachment");
+         net.WriteBool(condition);
+         net.WriteString(cat);
+         net.WriteString(attName);
+         net.WriteString(ply:Nick());
+         net.WriteTable(equippedTbl);
+      net.Broadcast();
+   end)
 
-	function SWEP:BroadcastClientsideVar(var, value, _type)
-		net.Start("ClientsideVar")
-			net.WriteString(self.Owner:Nick());
-			net.WriteString(var);
-			net.WriteString(_type);
-			for k,v in pairs(net) do
-				if (k == ("Write" .._type)) then
+   function SWEP:BroadcastClientsideVar(var, value, _type)
+      net.Start("ClientsideVar")
+         net.WriteString(self.Owner:Nick());
+         net.WriteString(var);
+         net.WriteString(_type);
+         for k,v in pairs(net) do
+            if (k == ("Write" .._type)) then
                if (_type == "Int") then
                   net[k](value, 32);
                else
-   					net[k](value);
+                  net[k](value);
                end
-				end
-			end
-		net.Broadcast();
-	end
+            end
+         end
+      net.Broadcast();
+   end
 end
 
 if (CLIENT) then
@@ -2220,136 +2241,136 @@ if (CLIENT) then
 end
 
 if (CLIENT) then
-	--[[hook.Add("FinishMove", "reqModels", function()
-		if (!IsValid(LocalPlayer())) then return false; end;
-		timer.Simple(1, function()
-			net.Start("InitClient");
-			net.SendToServer();
-		end)
-   		hook.Remove ("FinishMove", "reqModels");
-		return false;
-	end)]]--
+   --[[hook.Add("FinishMove", "reqModels", function()
+      if (!IsValid(LocalPlayer())) then return false; end;
+      timer.Simple(1, function()
+         net.Start("InitClient");
+         net.SendToServer();
+      end)
+         hook.Remove ("FinishMove", "reqModels");
+      return false;
+   end)]]--
 
-	hook.Add("Think", "fixModels", function()
-		timer.Simple(6, function()
-			net.Start("InitClient");
-			net.SendToServer();
-		end)
-   		hook.Remove ("Think", "fixModels");
-	end)
+   hook.Add("Think", "fixModels", function()
+      timer.Simple(6, function()
+         net.Start("InitClient");
+         net.SendToServer();
+      end)
+         hook.Remove ("Think", "fixModels");
+   end)
 
-	--[[hook.Add("TTTPrepareRound", "fixModelsA", function()
-		timer.Simple(5, function()
-			net.Start("InitClient");
-			net.SendToServer();
-		end)
-	end)]]--
+   --[[hook.Add("TTTPrepareRound", "fixModelsA", function()
+      timer.Simple(5, function()
+         net.Start("InitClient");
+         net.SendToServer();
+      end)
+   end)]]--
 end
 
 if (SERVER) then
-	net.Receive("InitClient", function(len, ply)
-		for k,v in pairs(ents.GetAll()) do
-			if (v.RegisteredAttachments != nil) then
-				local attData = v.RegisteredAttachments;
+   net.Receive("InitClient", function(len, ply)
+      for k,v in pairs(ents.GetAll()) do
+         if (v.RegisteredAttachments != nil) then
+            local attData = v.RegisteredAttachments;
 
-				local actualData = {};
+            local actualData = {};
 
-				for k, v in pairs(attData) do
-					actualData[k] = {};
-					for i, j in pairs(attData[k]) do
-						actualData[k][i] = {};
-						actualData[k][i].Bone = attData[k][i].Bone;
-						actualData[k][i].ModelPos = attData[k][i].ModelPos;
-						actualData[k][i].ModelAng = attData[k][i].ModelAng;
-						actualData[k][i].ModelSize = attData[k][i].ModelSize;
-						actualData[k][i].Parent = attData[k][i].Parent;
+            for k, v in pairs(attData) do
+               actualData[k] = {};
+               for i, j in pairs(attData[k]) do
+                  actualData[k][i] = {};
+                  actualData[k][i].Bone = attData[k][i].Bone;
+                  actualData[k][i].ModelPos = attData[k][i].ModelPos;
+                  actualData[k][i].ModelAng = attData[k][i].ModelAng;
+                  actualData[k][i].ModelSize = attData[k][i].ModelSize;
+                  actualData[k][i].Parent = attData[k][i].Parent;
 
-						actualData[k][i].WModelBone = attData[k][i].WModelBone;
-						actualData[k][i].WModelPos = attData[k][i].WModelPos;
-						actualData[k][i].WModelAng = attData[k][i].WModelAng;
-						actualData[k][i].WModelSize = attData[k][i].WModelSize;
-						actualData[k][i].WModelParent = attData[k][i].WModelParent;
-
-
-						actualData[k][i].AttachmentName = attData[k][i].AttachmentName;
-						actualData[k][i].Model = attData[k][i].Model;
-						actualData[k][i].Image = attData[k][i].Image;
-						actualData[k][i].Group = attData[k][i].Group;
-						actualData[k][i].Magnification = attData[k][i].Magnification;
-		            if (attData[k][i].Description) then
-		               actualData[k][i].Description = attData[k][i].Description;
-		            else
-		               actualData[k][i].Description = "Default Attachment Description";
-		            end
-		            actualData[k][i].Reticle = attData[k][i].Reticle;
-						actualData[k][i].ScopeRadius = attData[k][i].ScopeRadius;
-						actualData[k][i].HideModel = attData[k][i].HideModel;
-						actualData[k][i].ScopeOffset = attData[k][i].ScopeOffset;
-					end
-				end
-
-				local isDone = false;
-				while(IsValid(v) && actualData != nil && !isDone) do
-				 net.Start("RegisterAttachments");
-					net.WriteTable(actualData);
-					net.WriteEntity(v);
-				 net.Send(ply);
-				 isDone = true;
-				end
-			end
-		end
-	end)
-
-	net.Receive("InitClientCurrent", function(len, ply)
-		local wep = ply:GetActiveWeapon();
-		if (wep.RegisteredAttachments != nil) then
-			local attData = wep.RegisteredAttachments;
-
-			local actualData = {};
-
-			for k, v in pairs(attData) do
-				actualData[k] = {};
-				for i, j in pairs(attData[k]) do
-					actualData[k][i] = {};
-					actualData[k][i].Bone = attData[k][i].Bone;
-					actualData[k][i].ModelPos = attData[k][i].ModelPos;
-					actualData[k][i].ModelAng = attData[k][i].ModelAng;
-					actualData[k][i].ModelSize = attData[k][i].ModelSize;
-					actualData[k][i].Parent = attData[k][i].Parent;
-
-					actualData[k][i].WModelBone = attData[k][i].WModelBone;
-					actualData[k][i].WModelPos = attData[k][i].WModelPos;
-					actualData[k][i].WModelAng = attData[k][i].WModelAng;
-					actualData[k][i].WModelSize = attData[k][i].WModelSize;
-					actualData[k][i].WModelParent = attData[k][i].WModelParent;
+                  actualData[k][i].WModelBone = attData[k][i].WModelBone;
+                  actualData[k][i].WModelPos = attData[k][i].WModelPos;
+                  actualData[k][i].WModelAng = attData[k][i].WModelAng;
+                  actualData[k][i].WModelSize = attData[k][i].WModelSize;
+                  actualData[k][i].WModelParent = attData[k][i].WModelParent;
 
 
-					actualData[k][i].AttachmentName = attData[k][i].AttachmentName;
-					actualData[k][i].Model = attData[k][i].Model;
-					actualData[k][i].Image = attData[k][i].Image;
-					actualData[k][i].Group = attData[k][i].Group;
-					actualData[k][i].Magnification = attData[k][i].Magnification;
-	            if (attData[k][i].Description) then
-	               actualData[k][i].Description = attData[k][i].Description;
-	            else
-	               actualData[k][i].Description = "Default Attachment Description";
-	            end
-	            actualData[k][i].Reticle = attData[k][i].Reticle;
-					actualData[k][i].ScopeRadius = attData[k][i].ScopeRadius;
-					actualData[k][i].HideModel = attData[k][i].HideModel;
-					actualData[k][i].ScopeOffset = attData[k][i].ScopeOffset;
-				end
-			end
+                  actualData[k][i].AttachmentName = attData[k][i].AttachmentName;
+                  actualData[k][i].Model = attData[k][i].Model;
+                  actualData[k][i].Image = attData[k][i].Image;
+                  actualData[k][i].Group = attData[k][i].Group;
+                  actualData[k][i].Magnification = attData[k][i].Magnification;
+                  if (attData[k][i].Description) then
+                     actualData[k][i].Description = attData[k][i].Description;
+                  else
+                     actualData[k][i].Description = "Default Attachment Description";
+                  end
+                  actualData[k][i].Reticle = attData[k][i].Reticle;
+                  actualData[k][i].ScopeRadius = attData[k][i].ScopeRadius;
+                  actualData[k][i].HideModel = attData[k][i].HideModel;
+                  actualData[k][i].ScopeOffset = attData[k][i].ScopeOffset;
+               end
+            end
 
-			local isDone = false;
-			while(IsValid(wep) && actualData != nil && !isDone) do
-			 net.Start("RegisterAttachments");
-				net.WriteTable(actualData);
-				net.WriteEntity(wep);
-			 net.Send(ply);
-			 isDone = true;
-			end
-		end
-	end)
+            local isDone = false;
+            while(IsValid(v) && actualData != nil && !isDone) do
+             net.Start("RegisterAttachments");
+               net.WriteTable(actualData);
+               net.WriteEntity(v);
+             net.Send(ply);
+             isDone = true;
+            end
+         end
+      end
+   end)
+
+   net.Receive("InitClientCurrent", function(len, ply)
+      local wep = ply:GetActiveWeapon();
+      if (wep.RegisteredAttachments != nil) then
+         local attData = wep.RegisteredAttachments;
+
+         local actualData = {};
+
+         for k, v in pairs(attData) do
+            actualData[k] = {};
+            for i, j in pairs(attData[k]) do
+               actualData[k][i] = {};
+               actualData[k][i].Bone = attData[k][i].Bone;
+               actualData[k][i].ModelPos = attData[k][i].ModelPos;
+               actualData[k][i].ModelAng = attData[k][i].ModelAng;
+               actualData[k][i].ModelSize = attData[k][i].ModelSize;
+               actualData[k][i].Parent = attData[k][i].Parent;
+
+               actualData[k][i].WModelBone = attData[k][i].WModelBone;
+               actualData[k][i].WModelPos = attData[k][i].WModelPos;
+               actualData[k][i].WModelAng = attData[k][i].WModelAng;
+               actualData[k][i].WModelSize = attData[k][i].WModelSize;
+               actualData[k][i].WModelParent = attData[k][i].WModelParent;
+
+
+               actualData[k][i].AttachmentName = attData[k][i].AttachmentName;
+               actualData[k][i].Model = attData[k][i].Model;
+               actualData[k][i].Image = attData[k][i].Image;
+               actualData[k][i].Group = attData[k][i].Group;
+               actualData[k][i].Magnification = attData[k][i].Magnification;
+               if (attData[k][i].Description) then
+                  actualData[k][i].Description = attData[k][i].Description;
+               else
+                  actualData[k][i].Description = "Default Attachment Description";
+               end
+               actualData[k][i].Reticle = attData[k][i].Reticle;
+               actualData[k][i].ScopeRadius = attData[k][i].ScopeRadius;
+               actualData[k][i].HideModel = attData[k][i].HideModel;
+               actualData[k][i].ScopeOffset = attData[k][i].ScopeOffset;
+            end
+         end
+
+         local isDone = false;
+         while(IsValid(wep) && actualData != nil && !isDone) do
+          net.Start("RegisterAttachments");
+            net.WriteTable(actualData);
+            net.WriteEntity(wep);
+          net.Send(ply);
+          isDone = true;
+         end
+      end
+   end)
 
 end

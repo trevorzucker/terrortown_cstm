@@ -30,7 +30,7 @@ SWEP.Primary.ClipMax       = 20 -- keep mirrored to ammo
 SWEP.Primary.DefaultClip   = 20
 SWEP.Primary.Sound         = Sound("Weapon_AUG.Single")
 SWEP.Primary.UnsilencedSound         = SWEP.Primary.Sound;
-SWEP.Primary.SilencedSound         = "weapons/sil02.wav";
+SWEP.Primary.SilencedSound         = Sound( "Weapon_USP.SilencedShot" );
 SWEP.Primary.ZoomFOV = 20;
 
 SWEP.Secondary.Sound       = Sound("Default.Zoom")

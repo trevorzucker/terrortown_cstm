@@ -35,14 +35,13 @@ function GM:HUDWeaponPickedUp( wep )
    pickup.height    = h
    pickup.width     = w
 
-   if (self.BaseClass.PickupHistoryLast >= pickup.time) then
-      pickup.time = self.BaseClass.PickupHistoryLast + 0.05
+   if (self.PickupHistoryLast >= pickup.time) then
+      pickup.time = self.PickupHistoryLast + 0.05
    end
 
-   table.insert( self.BaseClass.PickupHistory, pickup )
-   self.BaseClass.PickupHistoryLast = pickup.time
+   table.insert( self.PickupHistory, pickup )
+   self.PickupHistoryLast = pickup.time
 
-   surface.PlaySound("items/itempickup.wav")
 end
 
 function GM:HUDItemPickedUp( itemname )
@@ -67,12 +66,12 @@ function GM:HUDItemPickedUp( itemname )
    pickup.height = h
    pickup.width  = w
 
-   if self.BaseClass.PickupHistoryLast >= pickup.time then
-      pickup.time = self.BaseClass.PickupHistoryLast + 0.05
+   if self.PickupHistoryLast >= pickup.time then
+      pickup.time = self.PickupHistoryLast + 0.05
    end
 
-   table.insert( self.BaseClass.PickupHistory, pickup )
-   self.BaseClass.PickupHistoryLast = pickup.time
+   table.insert( self.PickupHistory, pickup )
+   self.PickupHistoryLast = pickup.time
 
 end
 
@@ -81,10 +80,10 @@ function GM:HUDAmmoPickedUp( itemname, amount )
 
    local itemname_trans = TryTranslation(string.lower("ammo_" .. itemname))
 
-   if self.BaseClass.PickupHistory then
+   if self.PickupHistory then
 
       local localized_name = string.upper(itemname_trans)
-      for k, v in pairs( self.BaseClass.PickupHistory ) do
+      for k, v in pairs( self.PickupHistory ) do
          if v.name == localized_name then
 
             v.amount = tostring( tonumber(v.amount) + amount )
@@ -113,24 +112,24 @@ function GM:HUDAmmoPickedUp( itemname, amount )
    pickup.xwidth = w
    pickup.width = pickup.width + w + 16
 
-   if (self.BaseClass.PickupHistoryLast >= pickup.time) then
-      pickup.time = self.BaseClass.PickupHistoryLast + 0.05
+   if (self.PickupHistoryLast >= pickup.time) then
+      pickup.time = self.PickupHistoryLast + 0.05
    end
 
-   table.insert( self.BaseClass.PickupHistory, pickup )
-   self.BaseClass.PickupHistoryLast = pickup.time
+   table.insert( self.PickupHistory, pickup )
+   self.PickupHistoryLast = pickup.time
 
 end
 
 
 function GM:HUDDrawPickupHistory()
-   if (not self.BaseClass.PickupHistory) then return end
+   if (not self.PickupHistory) then return end
 
-   local x, y = ScrW() - self.BaseClass.PickupHistoryWide - 20, self.BaseClass.PickupHistoryTop
+   local x, y = ScrW() - self.PickupHistoryWide - 20, self.PickupHistoryTop
    local tall = 0
    local wide = 0
 
-   for k, v in pairs( self.BaseClass.PickupHistory ) do
+   for k, v in pairs( self.PickupHistory ) do
 
       if v.time < CurTime() then
 
@@ -150,46 +149,45 @@ function GM:HUDDrawPickupHistory()
             alpha = math.Clamp( delta * (255/v.fadeout), 0, 255 )
          end
 
-         v.x = x + self.BaseClass.PickupHistoryWide - (self.BaseClass.PickupHistoryWide * (alpha/255))
+         v.x = x + self.PickupHistoryWide - (self.PickupHistoryWide * (alpha/255))
 
 
-         local rx, ry, rw, rh = math.Round(v.x-4), math.Round(v.y-(v.height/2)-4), math.Round(self.BaseClass.PickupHistoryWide+9), math.Round(v.height+8)
+         local rx, ry, rw, rh = math.Round(v.x-4), math.Round(v.y-(v.height/2)-4), math.Round(self.PickupHistoryWide+9), math.Round(v.height+8)
          local bordersize = 8
 
-         --surface.SetTexture( self.PickupHistoryCorner )
+         surface.SetTexture( self.PickupHistoryCorner )
 
          surface.SetDrawColor( v.color.r, v.color.g, v.color.b, alpha )
-         --surface.DrawRect( rx+bordersize+v.height-4 + rw - (v.height - 4) - bordersize*2, ry, v.height - 4 + bordersize, rh )
-
-         surface.SetMaterial(Material("vgui/gradient-r"));
+         surface.DrawTexturedRectRotated( rx + bordersize/2 , ry + bordersize/2, bordersize, bordersize, 0 )
+         surface.DrawTexturedRectRotated( rx + bordersize/2 , ry + rh -bordersize/2, bordersize, bordersize, 90 )
+         surface.DrawRect( rx, ry+bordersize,  bordersize, rh-bordersize*2 )
+         surface.DrawRect( rx+bordersize, ry, v.height - 4, rh )
 
          --surface.SetDrawColor( 230*colordelta, 230*colordelta, 230*colordelta, alpha )
          surface.SetDrawColor( 20*colordelta, 20*colordelta, 20*colordelta, math.Clamp(alpha, 0, 200) )
 
-         surface.DrawTexturedRect( rx+v.height-4 - rw * 0.5, ry, rw * 1.5 - (v.height - 4) + bordersize, rh )
-         --surface.DrawRect( rx+rw-bordersize, ry+bordersize, bordersize, rh-bordersize*2 )
+         surface.DrawRect( rx+bordersize+v.height-4, ry, rw - (v.height - 4) - bordersize*2, rh )
+         surface.DrawTexturedRectRotated( rx + rw - bordersize/2 , ry + rh - bordersize/2, bordersize, bordersize, 180 )
+         surface.DrawTexturedRectRotated( rx + rw - bordersize/2 , ry + bordersize/2, bordersize, bordersize, 270 )
+         surface.DrawRect( rx+rw-bordersize, ry+bordersize, bordersize, rh-bordersize*2 )
 
-         surface.DrawTexturedRect(rx+v.height-4 - rw * 0.5, ry, rw * 1.5 - (v.height - 4) + bordersize, 2);
-         surface.DrawTexturedRect(rx+v.height-4 - rw * 0.5, ry + rh - 2, rw * 1.5 - (v.height - 4) + bordersize, 2);
-         surface.DrawRect(rx+v.height-4 - rw * 0.5 + rw * 1.5 - (v.height - 4) + bordersize - 2, ry, 2, rh);
+         draw.SimpleText( v.name, v.font, v.x+2+v.height+8, v.y - (v.height/2)+2, Color( 0, 0, 0, alpha*0.75 ) )
 
-         draw.SimpleText( v.name, v.font, v.x+2+v.height + 8 + bordersize, v.y - (v.height/2)+2, Color( 0, 0, 0, alpha*0.75 ) )
-
-         draw.SimpleText( v.name, v.font, v.x+v.height + 8 + bordersize, v.y - (v.height/2), Color( 255, 255, 255, alpha ) )
+         draw.SimpleText( v.name, v.font, v.x+v.height+8, v.y - (v.height/2), Color( 255, 255, 255, alpha ) )
 
          if v.amount then
-            draw.SimpleText( v.amount, v.font, v.x+self.BaseClass.PickupHistoryWide+2, v.y - (v.height/2)+2, Color( 0, 0, 0, alpha*0.75 ), TEXT_ALIGN_RIGHT )
-            draw.SimpleText( v.amount, v.font, v.x+self.BaseClass.PickupHistoryWide, v.y - (v.height/2), Color( 255, 255, 255, alpha ), TEXT_ALIGN_RIGHT )
+            draw.SimpleText( v.amount, v.font, v.x+self.PickupHistoryWide+2, v.y - (v.height/2)+2, Color( 0, 0, 0, alpha*0.75 ), TEXT_ALIGN_RIGHT )
+            draw.SimpleText( v.amount, v.font, v.x+self.PickupHistoryWide, v.y - (v.height/2), Color( 255, 255, 255, alpha ), TEXT_ALIGN_RIGHT )
          end
 
          y = y + (v.height + 16)
          tall = tall + v.height + 18
          wide = math.Max( wide, v.width + v.height + 24 )
 
-         if alpha == 0 then self.BaseClass.PickupHistory[k] = nil end
+         if alpha == 0 then self.PickupHistory[k] = nil end
       end
    end
 
-   self.BaseClass.PickupHistoryTop = (self.BaseClass.PickupHistoryTop * 5 + ( ScrH() * 0.75 - tall ) / 2 ) / 6
-   self.BaseClass.PickupHistoryWide = (self.BaseClass.PickupHistoryWide * 5 + wide) / 6
+   self.PickupHistoryTop = (self.PickupHistoryTop * 5 + ( ScrH() * 0.75 - tall ) / 2 ) / 6
+   self.PickupHistoryWide = (self.PickupHistoryWide * 5 + wide) / 6
 end

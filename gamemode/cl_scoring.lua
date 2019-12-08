@@ -63,7 +63,7 @@ function CLSCORE.DeclareEventDisplay(event_id, event_fns)
    if not tonumber(event_id) then
       Error("Event ??? display: invalid event id\n")
    end
-   if (not event_fns) or type(event_fns) != "table" then
+   if (not event_fns) or not istable(event_fns) then
       Error(Format("Event %d display: no display functions found.\n", event_id))
    end
    if not event_fns.text then
@@ -290,7 +290,7 @@ function CLSCORE:BuildHilitePanel(dpanel)
    winlbl:SetPos(xwin, ywin)
 
    bg.PaintOver = function()
-                     draw.RoundedBox(0, xwin - 15, ywin - 5, winlbl:GetWide() + 30, winlbl:GetTall() + 10, title.c)
+                     draw.RoundedBox(8, xwin - 15, ywin - 5, winlbl:GetWide() + 30, winlbl:GetTall() + 10, title.c)
                   end
 
    local ysubwin = ywin + winlbl:GetTall()
@@ -352,42 +352,37 @@ end
 function CLSCORE:ShowPanel()
    local margin = 15
 
-   local dpanel = vgui.Create("CFrame")
+   local dpanel = vgui.Create("DFrame")
    local w, h = 700, 500
-   dpanel:SetSize(700, 480)
+   dpanel:SetSize(700, 500)
    dpanel:Center()
-   --dpanel:SetTitle(T("report_title"))
-   dpanel:SetTitleHidden(T("report_title"))
-   dpanel:SetTitlePos(dpanel:GetWide() / 1.25, dpanel:GetTall() / 256)
+   dpanel:SetTitle(T("report_title"))
    dpanel:SetVisible(true)
-   dpanel:ShowCloseButton(false)
+   dpanel:ShowCloseButton(true)
    dpanel:SetMouseInputEnabled(true)
    dpanel:SetKeyboardInputEnabled(true)
-   dpanel:SetDraggable(false)
    dpanel.OnKeyCodePressed = util.BasicKeyHandler
 
    -- keep it around so we can reopen easily
    dpanel:SetDeleteOnClose(false)
    self.Panel = dpanel
 
-   local dbut = vgui.Create("CButton", dpanel)
+   local dbut = vgui.Create("DButton", dpanel)
    local bw, bh = 100, 25
    dbut:SetSize(bw, bh)
-   dbut:SetPos(w - bw - margin, h - bh - margin/2 - 20)
-   dbut:SetText("")
-   dbut:SetTextHidden(T("close"))
+   dbut:SetPos(w - bw - margin, h - bh - margin/2)
+   dbut:SetText(T("close"))
    dbut.DoClick = function() dpanel:Close() end
 
-   local dsave = vgui.Create("CButton", dpanel)
+   local dsave = vgui.Create("DButton", dpanel)
    dsave:SetSize(bw,bh)
-   dsave:SetPos(margin, h - bh - margin/2 - 20)
-   dsave:SetText("")
-   dsave:SetTextHidden(T("report_save"))
+   dsave:SetPos(margin, h - bh - margin/2)
+   dsave:SetText(T("report_save"))
    dsave:SetTooltip(T("report_save_tip"))
    dsave:SetConsoleCommand("ttt_save_events")
 
-   local dtabsheet = vgui.Create("CPropertySheet", dpanel)
-   dtabsheet:SetPos(margin, margin + 15 - 20)
+   local dtabsheet = vgui.Create("DPropertySheet", dpanel)
+   dtabsheet:SetPos(margin, margin + 15)
    dtabsheet:SetSize(w - margin*2, h - margin*3 - bh)
    local padding = dtabsheet:GetPadding()
 
@@ -523,9 +518,9 @@ function CLSCORE:ReportEvents(events)
    self:ShowPanel()
 end
 
-function CLSCORE:Reopen()
-   if self.Panel and self.Panel:IsValid() and not self.Panel:IsVisible() then
-      self.Panel:SetVisible(true)
+function CLSCORE:Toggle()
+   if IsValid(self.Panel) then
+      self.Panel:ToggleVisible()
    end
 end
 

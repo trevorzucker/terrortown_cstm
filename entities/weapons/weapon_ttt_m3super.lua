@@ -33,7 +33,7 @@ SWEP.Primary.Automatic     = false
 SWEP.Primary.NumShots      = 8
 SWEP.Primary.Sound         = Sound( "Weapon_M3.Single" )
 SWEP.Primary.UnsilencedSound         = Sound( "Weapon_M3.Single" )
-SWEP.Primary.SilencedSound = "weapons/sil02.wav"
+SWEP.Primary.SilencedSound = Sound( "Weapon_USP.SilencedShot" );
 SWEP.Primary.Recoil        = 8
 
 SWEP.AutoSpawnable         = true

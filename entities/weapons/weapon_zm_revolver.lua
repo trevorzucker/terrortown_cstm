@@ -28,7 +28,7 @@ SWEP.Primary.DefaultClip   = 7
 SWEP.Primary.Automatic     = false
 SWEP.Primary.Sound         = Sound( "Weapon_Deagle.Single" )
 SWEP.Primary.UnsilencedSound         = SWEP.Primary.Sound;
-SWEP.Primary.SilencedSound         = "weapons/sil02.wav";
+SWEP.Primary.SilencedSound         = Sound( "Weapon_USP.SilencedShot" );
 
 SWEP.HeadshotMultiplier    = 4
 

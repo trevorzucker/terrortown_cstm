@@ -17,6 +17,11 @@ local ClassHint = {
    }
 };
 
+-- Access for servers to display hints using their own HUD/UI.
+function GM:GetClassHints()
+    return ClassHint
+end
+
 -- Basic access for servers to add/modify hints. They override hints stored on
 -- the entities themselves.
 function GM:AddClassHint(cls, hint)
@@ -92,7 +97,7 @@ local function DrawPropSpecLabels(client)
    local scrpos = nil
    local text = nil
    local w = 0
-   for _, ply in pairs(player.GetAll()) do
+   for _, ply in ipairs(player.GetAll()) do
       if ply:IsSpec() then
          surface.SetTextColor(220,200,0,120)
 
@@ -140,14 +145,28 @@ local rag_color = Color(200,200,200,255)
 
 local GetLang = LANG.GetUnsafeLanguageTable
 
+local MAX_TRACE_LENGTH = math.sqrt(3) * 2 * 16384
+
 function GM:HUDDrawTargetID()
    local client = LocalPlayer()
 
    local L = GetLang()
 
-   DrawPropSpecLabels(client)
+   if hook.Call( "HUDShouldDraw", GAMEMODE, "TTTPropSpec" ) then
+      DrawPropSpecLabels(client)
+   end
 
-   local trace = client:GetEyeTrace(MASK_SHOT)
+   local startpos = client:EyePos()
+   local endpos = client:GetAimVector()
+   endpos:Mul(MAX_TRACE_LENGTH)
+   endpos:Add(startpos)
+
+   local trace = util.TraceLine({
+      start = startpos,
+      endpos = endpos,
+      mask = MASK_SHOT,
+      filter = client:GetObserverMode() == OBS_MODE_IN_EYE and {client, client:GetObserverTarget()} or client
+   })
    local ent = trace.Entity
    if (not IsValid(ent)) or ent.NoTarget then return end
 
@@ -237,31 +256,14 @@ function GM:HUDDrawTargetID()
    local font = "TargetID"
    surface.SetFont( font )
 
-   local plWep = LocalPlayer():GetActiveWeapon();
-   local yOffset = 0;
-
-   if (plWep && plWep.RegisteredAttachments) then
-      for k,v in pairs(plWep.RegisteredAttachments) do
-         local equipped = plWep.EquippedAttachments[k];
-         if (equipped && equipped != "none" && plWep.RegisteredAttachments[k][equipped].ScopeRadius != nil && plWep.RegisteredAttachments[k][equipped].ScopeRadius != 0) then
-            local scopeRadius = plWep.RegisteredAttachments[k][equipped].ScopeRadius;
-            if (plWep:GetIronsights()) then
-               yOffset = Lerp(plWep.mul, yOffset, ScrH() / scopeRadius);
-            else
-               yOffset = Lerp(plWep.mul, yOffset, 0);
-            end
-         end
-      end
-   end
-
    -- Draw main title, ie. nickname
    if text then
       w, h = surface.GetTextSize( text )
 
       x = x - w / 2
 
-      draw.SimpleText( text, font, x+1, y+1 + yOffset, COLOR_BLACK )
-      draw.SimpleText( text, font, x, y + yOffset, color )
+      draw.SimpleText( text, font, x+1, y+1, COLOR_BLACK )
+      draw.SimpleText( text, font, x, y, color )
 
       -- for ragdolls searched by detectives, add icon
       if ent.search_result and client:IsDetective() then
@@ -297,8 +299,8 @@ function GM:HUDDrawTargetID()
    w, h = surface.GetTextSize( text )
    x = x_orig - w / 2
 
-   draw.SimpleText( text, font, x+1, y+1 + yOffset, COLOR_BLACK )
-   draw.SimpleText( text, font, x, y + yOffset, clr )
+   draw.SimpleText( text, font, x+1, y+1, COLOR_BLACK )
+   draw.SimpleText( text, font, x, y, clr )
 
    font = "TargetIDSmall"
    surface.SetFont( font )
@@ -313,8 +315,8 @@ function GM:HUDDrawTargetID()
       y = y + h + 5
       x = x_orig - w / 2
 
-      draw.SimpleText( text, font, x+1, y+1 + yOffset, COLOR_BLACK )
-      draw.SimpleText( text, font, x, y + yOffset, clr )
+      draw.SimpleText( text, font, x+1, y+1, COLOR_BLACK )
+      draw.SimpleText( text, font, x, y, clr )
    end
 
    -- Draw key hint
@@ -328,8 +330,8 @@ function GM:HUDDrawTargetID()
       w, h = surface.GetTextSize(text)
       x = x_orig - w / 2
       y = y + h + 5
-      draw.SimpleText( text, font, x+1, y+1 + yOffset, COLOR_BLACK )
-      draw.SimpleText( text, font, x, y + yOffset, COLOR_LGRAY )
+      draw.SimpleText( text, font, x+1, y+1, COLOR_BLACK )
+      draw.SimpleText( text, font, x, y, COLOR_LGRAY )
    end
 
    text = nil
@@ -353,7 +355,7 @@ function GM:HUDDrawTargetID()
       x = x_orig - w / 2
       y = y + h + 5
 
-      draw.SimpleText( text, font, x+1, y+1 + yOffset, COLOR_BLACK )
-      draw.SimpleText( text, font, x, y + yOffset, clr )
+      draw.SimpleText( text, font, x+1, y+1, COLOR_BLACK )
+      draw.SimpleText( text, font, x, y, clr )
    end
 end

@@ -27,9 +27,9 @@ SWEP.Primary.Cone          = 0.03
 SWEP.Primary.ClipSize      = 30
 SWEP.Primary.ClipMax       = 90
 SWEP.Primary.DefaultClip   = 30
-SWEP.Primary.Sound         = Sound( "Weapon_MP5Navy.Single" )
+SWEP.Primary.Sound         = Sound( "Weapon_MP5Navy.Single" );
 SWEP.Primary.UnsilencedSound         = SWEP.Primary.Sound;
-SWEP.Primary.SilencedSound         = "weapons/sil04.wav";
+SWEP.Primary.SilencedSound         = Sound( "Weapon_USP.SilencedShot" );
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true

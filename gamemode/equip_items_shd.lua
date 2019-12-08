@@ -29,9 +29,8 @@ EQUIP_NONE     = 0
 EQUIP_ARMOR    = 1
 EQUIP_RADAR    = 2
 EQUIP_DISGUISE = 4
-EQUIP_SILENCE = 8
 
-EQUIP_MAX      = 8
+EQUIP_MAX      = 4
 
 -- Icon doesn't have to be in this dir, but all default ones are in here
 local mat_dir = "vgui/ttt/"
@@ -93,14 +92,6 @@ EquipmentItems = {
          desc     = "item_radar_desc"
       },
 
-      -- silencers
-      {  id       = EQUIP_SILENCE,
-         type     = "item_active",
-         material = mat_dir .. "icon_suppressorpack",
-         name     = "Silencer pack",
-         desc     = "Gives you 1 of each type of silencer"
-      },
-
       -- disguiser
       {  id       = EQUIP_DISGUISE,
          type     = "item_active",
@@ -111,19 +102,6 @@ EquipmentItems = {
    };
 };
 
-if (SERVER) then
-    hook.Add("TTTOrderedEquipment", "TTTAddAttachment", function(ply, equipment, is_item) -- Called when a player orders something
-        if equipment == EQUIP_SILENCE then -- if the player ordered our item
-            local atts = {"Shotgun Suppressor", "Rifle Suppressor", "PBS-4", "Pistol Suppressor", "SMG Suppressor"}
-            for k,v in pairs(atts) do
-               ply:SetNWInt("Has" ..v, 1);
-               net.Start("PickupAttachment");
-                  net.WriteString(v);
-               net.Send(ply);
-            end
-        end
-    end)
-end
 
 -- Search if an item is in the equipment table of a given role, and return it if
 -- it exists, else return nil.

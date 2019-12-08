@@ -21,66 +21,6 @@ function GM:PlayerInitialSpawn( ply )
 
    ply:InitialSpawn()
 
-   if (CLIENT) then
-      timer.Simple(8, function()
-         net.Start("InitClient");
-         net.SendToServer();
-      end)
-   end
-
-   if (SERVER) then
-      timer.Simple(8, function()
-         for k,v in pairs(ents.GetAll()) do
-            local attData = v.RegisteredAttachments or {};
-
-            local actualData = {};
-
-            for k, v in pairs(attData) do
-               actualData[k] = {};
-               for i, j in pairs(attData[k]) do
-                  actualData[k][i] = {};
-                  actualData[k][i].Bone = attData[k][i].Bone;
-                  actualData[k][i].ModelPos = attData[k][i].ModelPos;
-                  actualData[k][i].ModelAng = attData[k][i].ModelAng;
-                  actualData[k][i].ModelSize = attData[k][i].ModelSize;
-                  actualData[k][i].Parent = attData[k][i].Parent;
-
-                  actualData[k][i].WModelBone = attData[k][i].WModelBone;
-                  actualData[k][i].WModelPos = attData[k][i].WModelPos;
-                  actualData[k][i].WModelAng = attData[k][i].WModelAng;
-                  actualData[k][i].WModelSize = attData[k][i].WModelSize;
-                  actualData[k][i].WModelParent = attData[k][i].WModelParent;
-
-
-                  actualData[k][i].AttachmentName = attData[k][i].AttachmentName;
-                  actualData[k][i].Model = attData[k][i].Model;
-                  actualData[k][i].Image = attData[k][i].Image;
-                  actualData[k][i].Group = attData[k][i].Group;
-                  actualData[k][i].Magnification = attData[k][i].Magnification;
-                  if (attData[k][i].Description) then
-                     actualData[k][i].Description = attData[k][i].Description;
-                  else
-                     actualData[k][i].Description = "Default Attachment Description";
-                  end
-                  actualData[k][i].Reticle = attData[k][i].Reticle;
-                  actualData[k][i].ScopeRadius = attData[k][i].ScopeRadius;
-                  actualData[k][i].HideModel = attData[k][i].HideModel;
-                  actualData[k][i].ScopeOffset = attData[k][i].ScopeOffset;
-               end
-            end
-
-            local isDone = false;
-            while(IsValid(v) && actualData != nil && actualData != {} && !isDone) do
-               net.Start("RegisterAttachments");
-                  net.WriteTable(actualData);
-                  net.WriteEntity(v);
-               net.Broadcast();
-               isDone = true;
-            end
-         end
-      end)
-   end
-
    local rstate = GetRoundState() or ROUND_WAIT
    -- We should update the traitor list, if we are not about to send it
    if rstate <= ROUND_PREP then
@@ -105,7 +45,7 @@ end
 
 function GM:NetworkIDValidated( name, steamid )
    -- edge case where player authed after initspawn
-   for _, p in pairs(player.GetAll()) do
+   for _, p in ipairs(player.GetAll()) do
       if IsValid(p) and p:SteamID() == steamid and p.delay_karma_recall then
          KARMA.LateRecallAndSet(p)
          return
@@ -114,6 +54,9 @@ function GM:NetworkIDValidated( name, steamid )
 end
 
 function GM:PlayerSpawn(ply)
+   -- stop bleeding
+   util.StopBleeding(ply)
+  
    -- Some spawns may be tilted
    ply:ResetViewRoll()
 
@@ -173,7 +116,7 @@ function GM:IsSpawnpointSuitable(ply, spwn, force, rigged)
 
    local blocking = ents.FindInBox(pos + Vector( -16, -16, 0 ), pos + Vector( 16, 16, 64 ))
 
-   for k, p in pairs(blocking) do
+   for k, p in ipairs(blocking) do
       if IsValid(p) and p:IsPlayer() and p:IsTerror() and p:Alive() then
          if force then
             p:Kill()
@@ -193,8 +136,8 @@ local SpawnTypes = {"info_player_deathmatch", "info_player_combine",
 
 function GetSpawnEnts(shuffled, force_all)
    local tbl = {}
-   for k, classname in pairs(SpawnTypes) do
-      for _, e in pairs(ents.FindByClass(classname)) do
+   for k, classname in ipairs(SpawnTypes) do
+      for _, e in ipairs(ents.FindByClass(classname)) do
          if IsValid(e) and (not e.BeingRemoved) then
             table.insert(tbl, e)
          end
@@ -206,7 +149,7 @@ function GetSpawnEnts(shuffled, force_all)
    -- uses it for observer starts that are in places where players cannot really
    -- spawn well. At all.
    if force_all or #tbl == 0 then
-      for _, e in pairs(ents.FindByClass("info_player_start")) do
+      for _, e in ipairs(ents.FindByClass("info_player_start")) do
          if IsValid(e) and (not e.BeingRemoved) then
             table.insert(tbl, e)
          end
@@ -243,7 +186,7 @@ local function PointsAroundSpawn(spwn)
 end
 
 function GM:PlayerSelectSpawn(ply)
-   if (not self.SpawnPoints) or (table.Count(self.SpawnPoints) == 0) or (not IsTableOfEntitiesValid(self.SpawnPoints)) then
+   if (not self.SpawnPoints) or (table.IsEmpty(self.SpawnPoints)) or (not IsTableOfEntitiesValid(self.SpawnPoints)) then
 
       self.SpawnPoints = GetSpawnEnts(true, false)
 
@@ -254,8 +197,7 @@ function GM:PlayerSelectSpawn(ply)
       -- ones anyway.
    end
 
-   local num = table.Count(self.SpawnPoints)
-   if num == 0 then
+   if table.IsEmpty(self.SpawnPoints) then
       Error("No spawn entity found!\n")
       return
    end
@@ -568,7 +510,7 @@ local function CheckCreditAward(victim, attacker)
    -- DETECTIVE AWARD
    if IsValid(attacker) and attacker:IsPlayer() and attacker:IsActiveDetective() and victim:IsTraitor() then
       local amt = GetConVarNumber("ttt_det_credits_traitordead") or 1
-      for _, ply in pairs(player.GetAll()) do
+      for _, ply in ipairs(player.GetAll()) do
          if ply:IsActiveDetective() then
             ply:AddCredits(amt)
          end
@@ -583,8 +525,8 @@ local function CheckCreditAward(victim, attacker)
       local inno_alive = 0
       local inno_dead = 0
       local inno_total = 0
-      
-      for _, ply in pairs(player.GetAll()) do
+
+      for _, ply in ipairs(player.GetAll()) do
          if not ply:GetTraitor() then
             if ply:IsTerror() then
                inno_alive = inno_alive + 1
@@ -614,7 +556,7 @@ local function CheckCreditAward(victim, attacker)
          if amt > 0 then
             LANG.Msg(GetTraitorFilter(true), "credit_tr_all", {num = amt})
 
-            for _, ply in pairs(player.GetAll()) do
+            for _, ply in ipairs(player.GetAll()) do
                if ply:IsActiveTraitor() then
                   ply:AddCredits(amt)
                end
@@ -647,7 +589,7 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
    end
 
    -- Drop all weapons
-   for k, wep in pairs(ply:GetWeapons()) do
+   for k, wep in ipairs(ply:GetWeapons()) do
       WEPS.DropNotifiedWeapon(ply, wep, true) -- with ammo in them
       wep:DampenDrop()
    end
@@ -659,15 +601,6 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
    -- Create ragdoll and hook up marking effects
    local rag = CORPSE.Create(ply, attacker, dmginfo)
    ply.server_ragdoll = rag -- nil if clientside
-
-   for k,v in pairs(scripted_ents.GetList()) do
-      if (v.t.AttachmentName != nil) then
-         if (ply:GetNWInt("Has" ..v.t.AttachmentName) == 1) then
-            rag:SetNWInt("Has" ..v.t.AttachmentName, 1);
-            ply:SetNWInt("Has" ..v.t.AttachmentName, 0);
-         end
-      end
-   end
 
    CreateDeathEffect(ply, false)
 
@@ -727,7 +660,10 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
    end
 end
 
-function GM:PlayerDeath( victim, infl, attacker)
+function GM:PlayerDeath(victim, infl, attacker)
+   -- stop bleeding
+   util.StopBleeding(victim)
+
    -- tell no one
    self:PlayerSilentDeath(victim)
 
@@ -861,7 +797,7 @@ end
 -- rather high drop already. Hence we do our own fall damage handling in
 -- OnPlayerHitGround.
 function GM:GetFallDamage(ply, speed)
-   return 1
+   return 0
 end
 
 local fallsounds = {
@@ -1157,14 +1093,6 @@ function GM:Tick()
             end
          else
             ply.drowning = nil
-         end
-
-         -- Slow down ironsighters
-         local wep = ply:GetActiveWeapon()
-         if IsValid(wep) and wep.GetIronsights and wep:GetIronsights() then
-            ply:SetSpeed(true)
-         else
-            ply:SetSpeed(false)
          end
 
          -- Run DNA Scanner think also when it is not deployed
