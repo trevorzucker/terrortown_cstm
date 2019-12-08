@@ -1,87 +1,24 @@
-Trouble in Terrorist Town
-=========================
-Garry's Mod 13 gamemode 
-By Bad King Urgrain
-http://ttt.badking.net/
+# terrortown_cstm
+ My custom TTT weapon base
 
+## Features
+ Full-fledged attachment system with player networking
 
-Description
-===========
-Disaster strikes in the Terrorist team! These plucky bomb-planting fighters 
-have traitors in their midst who are looking to kill them all! But who are 
-the traitors... and who will come out of this alive?
+ Attachments randomly spawn automatically
 
-Installation
-============
-If you're looking at a version of TTT included in gmod, you're already done!
+ Easy custom weapon creation
 
-If you're dealing with a .zip version, extract .zip contents into:
-  "X:\Steam\steamapps\common\garrysmod\garrysmod\"
+ Easy custom attachment creation
 
-Or for a dedicated server:
-  "X:\srcds\orangebox\garrysmod\"
+ Attachments stay on weapon on drop, death, or any other event
 
-So that you get a "\garrysmod\gamemodes\terrortown\" directory.
+ Can loot un-equipped attachments off of corpses
 
-Installing is never necessary if you only want to play on servers.
+ Optimized code
 
+## Demo
+ [Here is a video of the weapon base in action](https://www.youtube.com/watch?v=wynb6JD1CBw)
+ [And another demonstrating the capabilities of custom attachments](https://www.youtube.com/watch?v=vcl1_K9JqU8)
 
-Dedicated server (srcds) preparation
-====================================
-The gamemode _requires_ CS:S content to be installed. The Garry's Mod wiki
-has some information on this here:
-* http://wiki.garrysmod.com/page/Mounting_Content_on_a_DS
-  
-If you want TTT to automatically switch maps every few rounds, place a
-mapcycle.txt in the "\garrysmod\" directory. It should contain a list of map
-names, exactly like the mapcycle.txt in Source games like CS:S or HL2DM. If you
-don't know what maps to use, just put in a list of the CS:S maps, all of them
-work. See ttt_round_limit and such in the convar section below for more configuration.
-
-A common problem is strange issues with floating grenades, floating weapons, and
-instant reloading. These are all caused by the server not having CS:S content
-installed. If the issues persist despite making sure the CS:S content is there,
-try moving the "cstrike" directory into the "orangebox" one, so you get "\servername\orangebox\cstrike\".
-
-While TTT tries to do this automatically, you'll also want to turn off "sv_alltalk" if it's on. 
-It will override TTT's voice handling, and let dead people talk to living players during a round (bad). 
-So put "sv_alltalk 0" in your server.cfg.
-
-Note that you should disable "sv_allowcslua" (disabled by default, but you should add "sv_allowcslua 0" just incase) functionality. With it on,
-cheating will be very easy. All you should need to do is set "sv_allowcslua" to 0.
-
-Modding the gamemode
-====================
-You should feel free to modify the gamemode in any way you want.
-
-An easy way of customizing TTT is creating your own weapons. You can add your
-own scripted weapons without touching the TTT code, so you won't have to
-deal too much with code changes from TTT updates.
-
-To get started with custom weapons, check the GMod wiki about SWEPs, and then
-take a look at some of the standard TTT weapons that you can find in:
-* "\gamemodes\terrortown\entities\weapons\"
-
-The script for weapon_tttbase has a bunch of documentation you might find
-useful. There is a guide available at http://ttt.badking.net/
-
-There are a number of hooks you can use as well. Again, the site is the place to
-find further information.
-
-Convars and concommands
-=======================
-The list of all convars used to be here in the readme, but has been moved to the site, where it is easier to find
-* http://ttt.badking.net/config-and-commands/
-
-Credits
-=======
-Bad King Urgrain made this in 2009/2010.
-
-Weapon/ammo/player spawn placement scripts included in TTT (such as those for
-the CS:S maps) were contributed by the following people:
-* Ajunk
-* Broadsword
-* eeny
-* JossiRossi
-* that guy
-* worbat
+## Note to servers
+ If you would like to use my weapon base, feel free! However, be sure to add [this addon](https://steamcommunity.com/sharedfiles/filedetails/?id=852242061) to your server. The attachment models and materials are not mine.
